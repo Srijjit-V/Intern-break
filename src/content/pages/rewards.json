@@ -1,0 +1,65 @@
+{
+  "hero": {
+    "eyebrow": "Prize counter",
+    "title": "Turn your points into team gear",
+    "description": "Choose a reward, redeem your points, and your admin will arrange the physical handoff."
+  },
+  "labels": {
+    "balance": "Available points",
+    "redeem": "Redeem reward",
+    "history": "My redemption history",
+    "emptyHistory": "No rewards redeemed yet.",
+    "success": "Reward request sent to your admins for physical fulfillment.",
+    "insufficient": "You do not have enough points for this reward."
+  },
+  "rewards": [
+    {
+      "name": "Classic T-shirt",
+      "description": "A comfortable team tee for everyday wear.",
+      "points": "150 points",
+      "icon": "Shirt",
+      "image": "/rewards/tshirt.svg",
+      "id": "fMIrUmN36Gag-AAHxeFdQ"
+    },
+    {
+      "name": "Cozy Hoodie",
+      "description": "A warm, branded layer for cooler days.",
+      "points": "300 points",
+      "icon": "Hoodie",
+      "image": "/rewards/hoodie.svg",
+      "id": "xrM5-2hhhC2LqvsCQ3yQa"
+    },
+    {
+      "name": "Team Lanyard",
+      "description": "A practical badge lanyard for workdays and events.",
+      "points": "75 points",
+      "icon": "Lanyard",
+      "image": "/rewards/lanyard.svg",
+      "id": "dmrWVIKkfgBee-MZ46xVM"
+    },
+    {
+      "name": "Insulated Water Bottle",
+      "description": "A reusable, branded bottle to keep drinks cold or hot.",
+      "points": "180 points",
+      "icon": "Bottle",
+      "image": "/rewards/bottle.svg",
+      "id": "xidWkb4HpKEEiUP-uYCuP"
+    },
+    {
+      "name": "Desk Essentials Kit",
+      "description": "A useful set of desk supplies for your workspace.",
+      "points": "225 points",
+      "icon": "BriefcaseBusiness",
+      "image": "/rewards/desk.svg",
+      "id": "kRY2wk2Ioy_lrzlahWUaB"
+    },
+    {
+      "name": "Team Lunch of Your Choice",
+      "description": "Choose a lunch spot for the team and make it a shared celebration.",
+      "points": "750 points",
+      "icon": "Utensils",
+      "image": "/rewards/lunch.svg",
+      "id": "3r5zgBgMOvo8VNRNkNSm_"
+    }
+  ]
+}

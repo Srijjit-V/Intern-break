@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" fill="none">
+  <rect width="640" height="400" fill="#ecfdf5"/>
+  <circle cx="520" cy="80" r="90" fill="#99f6e4" opacity=".7"/>
+  <circle cx="80" cy="340" r="110" fill="#fbcfe8" opacity=".55"/>
+  <path d="M220 120 L280 90 L320 130 L360 90 L420 120 L400 170 L370 160 L370 310 L270 310 L270 160 L240 170 Z" fill="#0f9f8a" stroke="#134e4a" stroke-width="6"/>
+  <circle cx="320" cy="200" r="28" fill="#f7f3eb"/>
+  <text x="308" y="210" font-size="24" font-weight="700" fill="#0f9f8a">iB</text>
+  <text x="40" y="56" font-family="Arial Black, sans-serif" font-size="28" fill="#134e4a">TEE</text>
+</svg>

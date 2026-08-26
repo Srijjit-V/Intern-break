@@ -1,0 +1,39 @@
+{
+  "cosmetics": "Cosmetics",
+  "heading": "Avatar Closet",
+  "subtitle": "Spend Gold on cosmetics. Earn it from games and quests.",
+  "goldLabel": "Gold",
+  "goldHint": "Earned from games & quests",
+  "previewLabel": "Idle dance preview",
+  "rewardsLink": "Need physical merch? Use Points → Rewards",
+  "equippedLabel": "Equipped",
+  "ownedLabel": "Owned · Equip",
+  "freeLabel": "Free",
+  "TABS": [
+    {
+      "slot": "body",
+      "label": "Color",
+      "id": "ESFaq4ixiNvlJcQLRy-lS"
+    },
+    {
+      "slot": "shirt",
+      "label": "Shirt",
+      "id": "r0-Gw6_M59SqAXkFoGWIM"
+    },
+    {
+      "slot": "pants",
+      "label": "Pants",
+      "id": "CWidQBmQEbrS_vlqal1jq"
+    },
+    {
+      "slot": "shoes",
+      "label": "Shoes",
+      "id": "u-awapHfTImVQhc1zev2_"
+    },
+    {
+      "slot": "hat",
+      "label": "Hat",
+      "id": "S3G98sWzqx5Lzg_6oZ1bl"
+    }
+  ]
+}

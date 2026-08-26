@@ -1,0 +1,51 @@
+{
+  "title": "Papa's Freezeria",
+  "subtitle": "Build the perfect ice cream sundae before the timer runs out.",
+  "backLabel": "Back to games",
+  "stationLabels": {
+    "order": "Order",
+    "blend": "Blend",
+    "build": "Build",
+    "serve": "Serve"
+  },
+  "instructions": {
+    "title": "How to play",
+    "items": [
+      "Customers arrive in a queue — serve them in order, first come first served.",
+      "Pick the right size, flavor, syrup & topping. Aim for ~6 syrup drizzles and ~5 topping drops for max points.",
+      "Speed matters! You get full time bonus under 20s. Points decay after that — finish before 90s or lose the bonus entirely."
+    ],
+    "steps": [
+      {
+        "title": "Serve the queue",
+        "body": "Customers line up. Serve them in order — first come, first served.",
+        "icon": "users"
+      },
+      {
+        "title": "Build the order",
+        "body": "Match size, flavor, syrup, and topping. Aim for ~6 syrup drizzles and ~5 topping drops for max points.",
+        "icon": "sundae"
+      },
+      {
+        "title": "Beat the clock",
+        "body": "Full time bonus under 20s. Points decay after that — finish before 90s or lose the bonus.",
+        "icon": "timer"
+      }
+    ]
+  },
+  "buttons": {
+    "start": "Start shift",
+    "next": "Next order",
+    "serve": "Serve sundae",
+    "restart": "Play again"
+  },
+  "status": {
+    "day": "Day 1",
+    "score": "Score",
+    "streak": "Streak",
+    "patience": "Patience",
+    "perfect": "Perfect order!",
+    "good": "Nice work!",
+    "miss": "Not quite right — keep going."
+  }
+}

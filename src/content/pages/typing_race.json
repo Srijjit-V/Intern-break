@@ -1,0 +1,58 @@
+{
+  "eyebrow": "Room race",
+  "title": "Typing Race",
+  "description": "Up to five racers can join from the same room. Press Enter to use nitro and skip a word.",
+  "backToGames": "Games",
+  "racersLabel": "racers",
+  "nitroLabel": "nitro",
+  "chooseCar": "Choose your car",
+  "startRace": "Start race",
+  "restartRace": "Restart race",
+  "inputPlaceholder": "Start typing. Press Enter for nitro.",
+  "idlePlaceholder": "Start the race to begin typing.",
+  "finishMessage": "Finish line crossed. Great race!",
+  "modes": {
+    "single": "Single",
+    "multi": "Multi"
+  },
+  "garage": {
+    "soloHeading": "Solo race",
+    "multiHeading": "Room race",
+    "soloDescription": "Race against the clock. Your best WPM is saved to the leaderboard.",
+    "multiDescription": "Race live against your room. First to finish wins.",
+    "startSoloButton": "Start solo race",
+    "joinLobbyButton": "Join lobby",
+    "startRoomRaceButton": "Start room race",
+    "readyButton": "Ready",
+    "leaveButton": "Leave race",
+    "lobbyHeading": "Race lobby",
+    "lobbyEmpty": "No one else in the lobby yet.",
+    "waitingForReady": "Waiting for everyone to ready up.",
+    "allReadyLabel": "Everyone ready — race starting!",
+    "readyCountLabel": "ready"
+  },
+  "race": {
+    "wpmLabel": "WPM",
+    "accuracyLabel": "Accuracy",
+    "timeLabel": "Time",
+    "nitroLabel": "Nitro",
+    "positionLabel": "Position",
+    "finishedLabel": "Finished",
+    "dnfLabel": "DNF",
+    "raceCompleteHeading": "Race complete",
+    "yourResultLabel": "Your result",
+    "playAgainButton": "Race again",
+    "backToGarageButton": "Back to garage",
+    "countdownLabel": "Get ready…",
+    "goLabel": "GO!"
+  },
+  "leaderboard": {
+    "heading": "Race results",
+    "rankLabel": "Rank",
+    "nameLabel": "Racer",
+    "wpmLabel": "WPM",
+    "accuracyLabel": "Acc",
+    "timeLabel": "Time",
+    "dnfLabel": "DNF"
+  }
+}

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" fill="none">
+  <rect width="640" height="400" fill="#fff7ed"/>
+  <circle cx="100" cy="80" r="100" fill="#fdba74" opacity=".5"/>
+  <path d="M230 130 Q320 70 410 130 L430 170 L400 180 L400 320 L240 320 L240 180 L210 170 Z" fill="#1e293b" stroke="#0f172a" stroke-width="6"/>
+  <path d="M270 130 Q320 100 370 130 Q320 160 270 130" fill="#334155" stroke="#0f172a" stroke-width="5"/>
+  <path d="M300 180 Q320 210 340 180" stroke="#fbbf24" stroke-width="6" fill="none"/>
+  <rect x="290" y="220" width="60" height="50" rx="10" fill="#0f9f8a"/>
+  <text x="40" y="56" font-family="Arial Black, sans-serif" font-size="28" fill="#9a3412">HOODIE</text>
+</svg>

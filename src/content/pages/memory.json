@@ -1,0 +1,34 @@
+{
+  "title": "Memory Match",
+  "description": "Flip fruit cards, find matching pairs, and finish in fewer moves.",
+  "previewBanner": "Memorize! Hiding in {n}s…",
+  "startButton": "Start Game",
+  "playAgainButton": "Play Again",
+  "changeDiffButton": "Change Difficulty",
+  "topScoresTitle": "Top Scores",
+  "noScoresText": "No scores yet!",
+  "scoreFormula": "Score = pairs × 100 − penalties",
+  "howToPlayTitle": "How to play",
+  "howToPlay": [
+    "Cards are shown briefly — memorize them!",
+    "Click two cards to flip them. If they match, they stay face-up.",
+    "Fewer moves and faster time = higher score."
+  ],
+  "difficulties": [
+    {
+      "id": "Easy",
+      "label": "Easy",
+      "detail": "6 pairs"
+    },
+    {
+      "id": "Medium",
+      "label": "Medium",
+      "detail": "10 pairs"
+    },
+    {
+      "id": "Hard",
+      "label": "Hard",
+      "detail": "12 pairs"
+    }
+  ]
+}

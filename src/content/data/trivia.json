@@ -1,0 +1,22 @@
+[
+  {"id":"q01","question":"What does a domain name help people do?","answers":["Find a website","Charge a phone","Print a logo","Write code automatically"],"correct":0,"category":"Domains","difficulty":"easy"},
+  {"id":"q02","question":"Which ending is commonly used for a business website?","answers":[".com",".zip",".photo",".game"],"correct":0,"category":"Domains","difficulty":"easy"},
+  {"id":"q03","question":"What is a homepage?","answers":["The main starting page of a website","A social media password","A computer keyboard","A shipping label"],"correct":0,"category":"Websites","difficulty":"easy"},
+  {"id":"q04","question":"What does SEO help improve?","answers":["How easily people find a site in search","The size of a laptop","The weather","A coffee order"],"correct":0,"category":"Marketing","difficulty":"easy"},
+  {"id":"q05","question":"What is a shopping cart used for on a website?","answers":["Collecting items before checkout","Storing passwords","Changing colors","Sending emails"],"correct":0,"category":"Websites","difficulty":"easy"},
+  {"id":"q06","question":"What does a 404 message usually mean?","answers":["The page could not be found","The site is extra fast","A new customer joined","The domain renewed"],"correct":0,"category":"Internet","difficulty":"easy"},
+  {"id":"q07","question":"Which is a smart first step for a new business idea?","answers":["Choose a clear name and audience","Buy every ad at once","Skip the website","Ignore customers"],"correct":0,"category":"InternLife","difficulty":"easy"},
+  {"id":"q08","question":"What does hosting provide for a website?","answers":["A place for the site to live online","A logo design","A social post","A business card"],"correct":0,"category":"Websites","difficulty":"easy"},
+  {"id":"q09","question":"What is a call to action?","answers":["A prompt that tells visitors what to do next","A phone repair","A team meeting","A domain extension"],"correct":0,"category":"Marketing","difficulty":"medium"},
+  {"id":"q10","question":"Which button is a clear call to action?","answers":["Book a demo","Maybe later","Nothing here","Blue square"],"correct":0,"category":"Marketing","difficulty":"easy"},
+  {"id":"q11","question":"What does it mean when a site is mobile-friendly?","answers":["It works well on phones","It only works in an office","It has a mobile game","It sends text messages"],"correct":0,"category":"Websites","difficulty":"easy"},
+  {"id":"q12","question":"What can a strong brand help people remember?","answers":["A business and what it stands for","Only a password","A browser tab","A Wi-Fi signal"],"correct":0,"category":"InternLife","difficulty":"easy"},
+  {"id":"q13","question":"What does a website analytics dashboard help track?","answers":["Visitor activity","Ice cream flavors","Keyboard shortcuts","Office chairs"],"correct":0,"category":"Marketing","difficulty":"medium"},
+  {"id":"q14","question":"What is a broken link?","answers":["A link that leads nowhere","A new domain","A fast checkout","A logo file"],"correct":0,"category":"Internet","difficulty":"easy"},
+  {"id":"q15","question":"Which is a useful way to grow an audience?","answers":["Share helpful content consistently","Hide the website","Use no contact details","Never update anything"],"correct":0,"category":"Marketing","difficulty":"easy"},
+  {"id":"q16","question":"What is an online storefront?","answers":["A website where customers can browse and buy","A physical office door","A social media profile only","A spreadsheet"],"correct":0,"category":"Websites","difficulty":"easy"},
+  {"id":"q17","question":"Why should a business keep its domain renewed?","answers":["So the website address stays active","To change the logo color","To add more employees","To speed up typing"],"correct":0,"category":"Domains","difficulty":"medium"},
+  {"id":"q18","question":"What is a good intern-team habit when building something new?","answers":["Test, learn, and share feedback","Guess and never check","Skip collaboration","Avoid users"],"correct":0,"category":"InternLife","difficulty":"easy"},
+  {"id":"q19","question":"What does a secure website commonly use?","answers":["HTTPS","A paper map","A floppy disk","A fax machine"],"correct":0,"category":"Internet","difficulty":"medium"},
+  {"id":"q20","question":"What is a target audience?","answers":["The people a business wants to reach","A game score","A server error","A browser setting"],"correct":0,"category":"Marketing","difficulty":"easy"}
+]

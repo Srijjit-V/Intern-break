@@ -1,0 +1,58 @@
+{
+  "title": "Set with Friends",
+  "subtitle": "Find groups of 3 cards where each attribute is either all the same or all different.",
+  "backLabel": "Games",
+  "howToPlay": {
+    "heading": "How to play",
+    "rules": [
+      {
+        "id": "r1",
+        "emoji": "🔢",
+        "attr": "Number",
+        "desc": "1, 2, or 3 symbols — all same or all different"
+      },
+      {
+        "id": "r2",
+        "emoji": "🎨",
+        "attr": "Color",
+        "desc": "Red, green, or purple — all same or all different"
+      },
+      {
+        "id": "r3",
+        "emoji": "🔷",
+        "attr": "Shape",
+        "desc": "Oval, squiggle, or diamond — all same or all different"
+      },
+      {
+        "id": "r4",
+        "emoji": "◻️",
+        "attr": "Fill",
+        "desc": "Solid, striped, or empty — all same or all different"
+      }
+    ]
+  },
+  "buttons": {
+    "start": "Start Game",
+    "playAgain": "Play Again",
+    "done": "Done",
+    "hint": "💡 Hint",
+    "hintUsed": "💡 Hint (used)",
+    "quit": "Quit"
+  },
+  "status": {
+    "sets": "sets",
+    "mistakes": "mistakes",
+    "setsOnBoard": "sets on board",
+    "setOnBoard": "set on board",
+    "noMoreSets": "No more sets on the board",
+    "gameOver": "Game Over!",
+    "newBest": "New personal best!",
+    "personalBest": "Personal best"
+  },
+  "score": {
+    "setsFound": "Sets found",
+    "mistakesLabel": "Mistakes",
+    "timeBonus": "Time bonus",
+    "total": "Total"
+  }
+}

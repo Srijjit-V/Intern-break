@@ -1,0 +1,13 @@
+{
+  "GAMES": [
+    { "id": "flappy", "title": "Flappy Bird", "description": "Tap to flap through the pipes. Don't crash.", "emoji": "🐦", "color": "from-green-500/20 to-sky-500/20", "glow": "#22c55e", "path": "/flappy", "live": true, "tag": "Live", "image": "/airo-assets/images/games/flappy-thumbnail" },
+    { "id": "freezeria", "title": "Papa's Freezeria", "description": "Build sundaes, take orders, and keep the line moving.", "emoji": "🍨", "color": "from-pink-500/20 to-orange-500/20", "glow": "#fb7185", "path": "/freezeria", "live": true, "tag": "Live", "image": "/airo-assets/images/games/freezeria-thumbnail" },
+    { "id": "snake", "title": "Snake", "description": "Eat apples, grow longer, and don't bite yourself.", "emoji": "🐍", "color": "from-emerald-500/20 to-teal-500/20", "glow": "#10b981", "path": "/snake", "live": true, "tag": "Live", "image": "/airo-assets/images/games/snake-thumbnail" },
+    { "id": "memory", "title": "Memory Match", "description": "Flip cards and find matching pairs.", "emoji": "🃏", "color": "from-purple-500/20 to-pink-500/20", "glow": "#a78bfa", "path": "/memory", "live": true, "tag": "Live", "image": "/airo-assets/images/games/memory-thumbnail" },
+    { "id": "trivia", "title": "Trivia Blitz", "description": "Answer fast and climb the high-score board.", "emoji": "⚡", "color": "from-yellow-500/20 to-orange-500/20", "glow": "#fbbf24", "path": "/trivia", "live": true, "tag": "Live", "image": "/airo-assets/images/games/trivia-thumbnail" },
+    { "id": "set", "title": "Set with Friends", "description": "Find sets of three cards before time runs out.", "emoji": "🃠", "color": "from-rose-500/20 to-violet-500/20", "glow": "#e879f9", "path": "/set", "live": true, "tag": "Live", "image": "/airo-assets/images/games/set-with-friends-thumbnail" },
+    { "id": "crossy", "title": "Crossy Road", "description": "Cross the road, dodge traffic, and keep hopping.", "emoji": "🐔", "color": "from-green-500/20 to-yellow-500/20", "glow": "#22c55e", "path": "/crossy", "live": true, "tag": "Live", "image": "/airo-assets/images/games/crossy-thumbnail" },
+    { "id": "typing", "title": "Speed Typing", "description": "Type as fast and accurately as you can.", "emoji": "⌨️", "color": "from-sky-500/20 to-blue-500/20", "glow": "#38bdf8", "path": "/typing", "live": true, "tag": "Live", "image": "/airo-assets/images/games/typing-thumbnail" },
+    { "id": "typing-race", "title": "Typing Race", "description": "Pick a car, race your room, and use nitro to clear tough words.", "emoji": "🏎️", "color": "from-rose-500/20 to-amber-500/20", "glow": "#fb7185", "path": "/typing-race", "live": true, "tag": "Live", "image": "/airo-assets/images/games/typing-race-thumbnail" }
+  ]
+}

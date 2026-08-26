@@ -1,0 +1,70 @@
+{
+  "tabList": [
+    {
+      "key": "overall",
+      "label": "Overall",
+      "id": "Xy-NDZNf34tpNZm_4PuZX"
+    },
+    {
+      "key": "challenges",
+      "label": "Challenges",
+      "id": "NAhqvJY8WScuq7rA7CM_c"
+    },
+    {
+      "key": "flappy",
+      "label": "🐦 Flappy Bird",
+      "id": "cJFcVMhamtlBUyG8FeMWS"
+    },
+    {
+      "key": "trivia",
+      "label": "Trivia",
+      "id": "lb-trivia-01"
+    },
+    {
+      "key": "crossy",
+      "label": "Crossy",
+      "id": "lb-crossy-01"
+    },
+    {
+      "key": "snake",
+      "label": "Snake",
+      "id": "lb-snake-01"
+    },
+    {
+      "key": "memory",
+      "label": "Memory",
+      "id": "lb-memory-01"
+    },
+    {
+      "key": "typing",
+      "label": "Typing",
+      "id": "lb-typing-01"
+    },
+    {
+      "key": "alltime",
+      "label": "All-Time",
+      "id": "-CyFR7ga03o30Ujm4GW6s"
+    }
+  ],
+  "hero": {
+    "eyebrow": "Tournament Arcade",
+    "title": "Leaderboard",
+    "subtitle": "Stage rankings across challenges and all arcade games. Top beans dance on the podium."
+  },
+  "stats": {
+    "membersLabel": "Members",
+    "totalPtsLabel": "Total Challenge Pts",
+    "topFlappyLabel": "Top Flappy Score",
+    "activeTodayLabel": "Active Today"
+  },
+  "podium": {
+    "championLabel": "Champion",
+    "youLabel": "You"
+  },
+  "empty": {
+    "noMembers": "No members yet",
+    "noFlappy": "No official scores yet — play Flappy Bird to get on the board!",
+    "flappyHint": "(Your 2nd run of the day counts)"
+  },
+  "loading": "Loading leaderboard…"
+}

@@ -1,0 +1,25 @@
+{
+  "meta": {
+    "title": "Points History - Intern Break Space",
+    "description": "Track all-time points balances and weekly point history for your room."
+  },
+  "hero": {
+    "title": "Points Ledger",
+    "description": "All-time balances and a week-by-week breakdown of every point earned in the room."
+  },
+  "live": {
+    "title": "Current Balances",
+    "available": "All-time points",
+    "latest": "Points this week"
+  },
+  "history": {
+    "title": "Weekly History",
+    "empty": "No weekly history yet — check back after the first week closes.",
+    "headers": {
+      "member": "Member",
+      "earned": "Earned",
+      "carryover": "Carryover",
+      "closing": "Closing"
+    }
+  }
+}

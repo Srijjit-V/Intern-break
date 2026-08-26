@@ -1,0 +1,831 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  BREAK ROOM CLUB — cinematic polish pass
+  Type: Outfit (display) + Plus Jakarta Sans (UI)
+  Canvas: cool Apple slate / Netflix charcoal (not warm cream)
+  Motion: soft portal orbs + cinema fade + Netflix-tile hover
+  Refs: Netflix dark stage, Apple product reveal, Spotify restraint, Airbnb clarity
+*/
+
+@layer base {
+  :root {
+    /* Cool slate stage — Apple-adjacent, not cream */
+    --background: 220 24% 96%;
+    --foreground: 222 28% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 28% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 28% 10%;
+    --primary: 166 78% 34%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 168 28% 92%;
+    --secondary-foreground: 168 55% 22%;
+    --muted: 220 18% 93%;
+    --muted-foreground: 220 10% 42%;
+    --accent: 350 86% 56%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 16% 88%;
+    --input: 220 16% 88%;
+    --ring: 166 78% 34%;
+
+    --chart-1: 166 78% 30%;
+    --chart-2: 166 70% 42%;
+    --chart-3: 350 86% 56%;
+    --chart-4: 38 92% 52%;
+    --chart-5: 220 70% 50%;
+
+    --sidebar: 222 28% 8%;
+    --sidebar-foreground: 220 20% 96%;
+    --sidebar-primary: 166 72% 42%;
+    --sidebar-primary-foreground: 222 28% 8%;
+    --sidebar-accent: 222 20% 14%;
+    --sidebar-accent-foreground: 220 20% 96%;
+    --sidebar-border: 222 14% 18%;
+    --sidebar-ring: 166 72% 42%;
+
+    --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+    --font-heading: "Outfit", system-ui, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+    --radius: 1.25rem;
+    --radius-button: 999px;
+
+    --ink: #0e1118;
+    --mint: #0f9f8a;
+    --hot: #ef4464;
+    --cream: #f4f6fa;
+    --rail: #0e1118;
+
+    /* Apple product ease + Netflix cinema */
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-spring: cubic-bezier(0.34, 1.25, 0.64, 1);
+    --ease-cinema: cubic-bezier(0.4, 0, 0.2, 1);
+    --duration-enter: 480ms;
+    --duration-exit: 180ms;
+
+    --shadow-2xs: 0 1px 2px rgb(14 17 24 / 0.04);
+    --shadow-xs: 0 1px 3px rgb(14 17 24 / 0.05);
+    --shadow-sm: 0 2px 10px rgb(14 17 24 / 0.06);
+    --shadow: 0 10px 28px rgb(14 17 24 / 0.08);
+    --shadow-md: 0 16px 40px rgb(14 17 24 / 0.1);
+    --shadow-lg: 0 24px 56px rgb(14 17 24 / 0.12);
+    --shadow-xl: 0 32px 72px rgb(14 17 24 / 0.14);
+    --shadow-2xl: 0 48px 96px rgb(14 17 24 / 0.18);
+
+    --surface-card: #ffffff;
+    --surface-card-border: #dde3ec;
+    --surface-input: #eef1f6;
+    --surface-input-border: #d5dbe6;
+    --surface-overlay: #f4f6fa;
+    --surface-sidebar: #0e1118;
+    --text-primary: #0e1118;
+    --text-secondary: #5a6478;
+    --text-muted: #8791a3;
+  }
+
+  html.light {
+    --background: 220 24% 96%;
+    --foreground: 222 28% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 28% 10%;
+    --primary: 166 78% 34%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 168 28% 92%;
+    --secondary-foreground: 168 55% 22%;
+    --muted: 220 18% 93%;
+    --muted-foreground: 220 10% 42%;
+    --accent: 350 86% 56%;
+    --accent-foreground: 0 0% 100%;
+    --border: 220 16% 88%;
+    --input: 220 16% 88%;
+    --ring: 166 78% 34%;
+    /* Rail stays dark charcoal even in light mode — deliberate contrast against
+       the light canvas (Spotify/Discord icon-rail pattern), not the app theme. */
+    --sidebar: 222 28% 8%;
+    --sidebar-foreground: 220 20% 96%;
+    --sidebar-primary: 166 72% 48%;
+    --sidebar-primary-foreground: 222 28% 8%;
+    --sidebar-accent: 222 20% 14%;
+    --sidebar-accent-foreground: 220 20% 96%;
+    --sidebar-border: 222 14% 18%;
+  }
+
+  html.dark {
+    /* Netflix charcoal stage */
+    --background: 222 18% 6%;
+    --foreground: 220 20% 96%;
+    --card: 222 14% 10%;
+    --card-foreground: 220 20% 96%;
+    --popover: 222 14% 10%;
+    --popover-foreground: 220 20% 96%;
+    --primary: 166 70% 44%;
+    --primary-foreground: 222 18% 6%;
+    --secondary: 222 12% 15%;
+    --secondary-foreground: 166 45% 72%;
+    --muted: 222 12% 13%;
+    --muted-foreground: 220 10% 64%;
+    --accent: 350 86% 60%;
+    --accent-foreground: 0 0% 100%;
+    --border: 222 12% 18%;
+    --input: 222 12% 18%;
+    --ring: 166 70% 44%;
+    --sidebar: 222 22% 4%;
+    --sidebar-foreground: 220 20% 96%;
+    --sidebar-primary: 166 70% 44%;
+    --sidebar-primary-foreground: 222 18% 6%;
+    --sidebar-accent: 222 14% 11%;
+    --sidebar-accent-foreground: 220 20% 96%;
+    --sidebar-border: 222 12% 14%;
+
+    --ink: #f4f6fa;
+    --mint: #2dd4bf;
+    --hot: #fb7185;
+    --cream: #0e1118;
+    --rail: #07090d;
+
+    --surface-card: #161a22;
+    --surface-card-border: #272c38;
+    --surface-input: #11151c;
+    --surface-input-border: #272c38;
+    --surface-overlay: #0e1118;
+    --surface-sidebar: #07090d;
+    --text-primary: #f4f6fa;
+    --text-secondary: #a8b0c0;
+    --text-muted: #7c8698;
+  }
+
+  * { @apply border-border; }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01" on, "cv11" on;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading) !important;
+    letter-spacing: -0.03em;
+    font-weight: 700;
+  }
+}
+
+@layer components {
+  .club-shell {
+    @apply relative flex w-screen overflow-hidden bg-background;
+    height: 100dvh;
+    height: 100vh; /* fallback */
+  }
+
+  /* Soft portal orbs — abstract, low contrast, never compete with content */
+  .club-shell::before,
+  .ambient-stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      radial-gradient(ellipse 55% 40% at 12% 8%, hsl(166 78% 40% / 0.1), transparent 55%),
+      radial-gradient(ellipse 45% 35% at 92% 12%, hsl(350 86% 56% / 0.07), transparent 50%),
+      radial-gradient(ellipse 50% 40% at 70% 90%, hsl(220 70% 55% / 0.06), transparent 55%);
+    animation: orbDrift 18s var(--ease-cinema) infinite alternate;
+  }
+
+  html.dark .club-shell::before,
+  html.dark .ambient-stage::before {
+    background:
+      radial-gradient(ellipse 55% 40% at 10% 0%, hsl(166 70% 44% / 0.14), transparent 55%),
+      radial-gradient(ellipse 40% 35% at 95% 15%, hsl(350 86% 56% / 0.1), transparent 50%),
+      radial-gradient(ellipse 50% 45% at 60% 100%, hsl(230 60% 50% / 0.08), transparent 55%);
+  }
+
+  /* Icon rail: CSS-only hover expand (VS Code / Discord pattern) */
+  .club-rail-slot {
+    @apply relative z-20 h-full shrink-0;
+    width: 76px;
+  }
+
+  .club-rail {
+    @apply absolute left-0 top-0 z-30 flex h-full flex-col border-r border-border py-4;
+    width: 76px;
+    background: hsl(var(--sidebar));
+    color: hsl(var(--sidebar-foreground));
+    overflow: hidden;
+    white-space: nowrap;
+    transition: width 280ms var(--ease-out), box-shadow 280ms var(--ease-cinema), transform 280ms var(--ease-out);
+  }
+
+  .club-rail:hover,
+  .club-rail:focus-within {
+    width: 208px;
+    box-shadow: 12px 0 40px rgb(14 17 24 / 0.22);
+  }
+
+  /* ── Mobile: hidden off-screen by default, slides in when open ── */
+  @media (max-width: 639px) {
+    .club-rail-slot {
+      width: 0;
+      position: relative;
+    }
+    .club-rail {
+      width: 220px;
+      transform: translateX(-100%);
+      box-shadow: none;
+    }
+    .club-rail.rail-open {
+      transform: translateX(0);
+      box-shadow: 12px 0 40px rgb(14 17 24 / 0.35);
+    }
+    /* When mobile rail is open, don't expand further on hover */
+    .club-rail.rail-open:hover,
+    .club-rail.rail-open:focus-within {
+      width: 220px;
+    }
+    /* Always show labels on mobile when open */
+    .club-rail.rail-open .rail-label,
+    .club-rail.rail-open .rail-game-label {
+      max-width: 140px;
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0);
+      transition-delay: 0s;
+    }
+    .club-rail.rail-open .rail-game,
+    .club-rail.rail-open:hover .rail-game,
+    .club-rail.rail-open:focus-within .rail-game {
+      width: 100%;
+      border-radius: 12px;
+      padding: 8px 12px;
+      gap: 10px;
+      justify-content: flex-start;
+    }
+    .club-rail.rail-open .rail-game > svg,
+    .club-rail.rail-open:hover .rail-game > svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  /* ── Compact: icon-only at 640–767px (no hover expand) ── */
+  @media (min-width: 640px) and (max-width: 767px) {
+    .club-rail-slot {
+      width: 60px;
+    }
+    .club-rail {
+      width: 60px;
+    }
+    .club-rail:hover,
+    .club-rail:focus-within {
+      width: 60px;
+      box-shadow: none;
+    }
+    .club-rail .rail-label,
+    .club-rail:hover .rail-label,
+    .club-rail:focus-within .rail-label,
+    .club-rail .rail-game-label,
+    .club-rail:hover .rail-game-label,
+    .club-rail:focus-within .rail-game-label {
+      display: none !important;
+    }
+  }
+
+  .club-rail-brand {
+    @apply mb-5 flex h-12 shrink-0 items-center gap-3 overflow-hidden px-3;
+    color: hsl(var(--sidebar-foreground)) !important;
+  }
+
+  .club-rail-brand img {
+    @apply h-11 w-11 shrink-0 rounded-2xl object-cover;
+  }
+
+  .club-rail a,
+  .club-rail button {
+    color: hsl(var(--sidebar-foreground));
+  }
+
+  .club-rail a:hover,
+  .club-rail button:hover,
+  .club-rail a:focus-visible,
+  .club-rail button:focus-visible {
+    color: hsl(var(--sidebar-primary));
+  }
+
+  .rail-label {
+    @apply overflow-hidden text-sm font-semibold;
+    color: hsl(var(--sidebar-foreground)) !important;
+    max-width: 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-6px);
+    transition: opacity 200ms var(--ease-out), max-width 280ms var(--ease-out), transform 280ms var(--ease-out), visibility 0s linear 200ms;
+  }
+
+  .club-rail:hover .rail-label,
+  .club-rail:focus-within .rail-label {
+    max-width: 140px;
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+    transition-delay: 0s;
+  }
+
+  .club-hud {
+    @apply relative z-10 flex h-16 shrink-0 items-center justify-between gap-2 border-b border-border bg-card/80 px-3 backdrop-blur-xl sm:gap-4 md:px-7;
+  }
+
+  .club-main {
+    @apply relative z-10 flex min-w-0 flex-1 flex-col overflow-hidden;
+  }
+
+  .club-scroll {
+    @apply relative z-10 flex-1 overflow-y-auto;
+  }
+
+  /* Room background: DOM-backed hero band so large uploaded data URLs render reliably. */
+  .room-bg-hero {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: min(62vh, 560px);
+    z-index: 0;
+    pointer-events: none;
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    opacity: 0.9;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 52%, rgba(0, 0, 0, 0.55) 78%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 52%, rgba(0, 0, 0, 0.55) 78%, transparent 100%);
+  }
+
+  .club-scroll > *:not(.room-bg-hero) {
+    position: relative;
+    z-index: 1;
+  }
+
+  .ambient-stage {
+    @apply relative min-h-screen overflow-hidden bg-background;
+  }
+
+  .landing-hero-panel {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+    color: hsl(var(--primary-foreground));
+  }
+
+  .landing-hero-brand,
+  .landing-hero-title,
+  .landing-hero-copy {
+    color: hsl(var(--primary-foreground));
+  }
+
+  html.light .landing-hero-panel {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+  }
+
+  html.light .landing-hero-brand,
+  html.light .landing-hero-title {
+    color: hsl(var(--foreground));
+  }
+
+  html.light .landing-hero-copy {
+    color: hsl(var(--muted-foreground));
+  }
+
+  .page-shell {
+    @apply relative z-10 mx-auto w-full max-w-6xl px-5 py-7 md:px-8 md:py-9;
+  }
+
+  .page-kicker {
+    @apply inline-flex items-center gap-2 rounded-full bg-secondary px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-secondary-foreground;
+  }
+
+  .page-title {
+    @apply text-4xl font-bold tracking-tight text-foreground md:text-5xl;
+    font-family: var(--font-heading);
+    letter-spacing: -0.035em;
+  }
+
+  .page-subtitle {
+    @apply mt-2 max-w-2xl text-base text-muted-foreground md:text-lg;
+  }
+
+  .surface {
+    @apply rounded-[1.5rem] border border-border bg-card shadow-sm;
+    transition: transform var(--duration-exit) var(--ease-out), box-shadow 220ms var(--ease-cinema);
+  }
+
+  .surface-pad {
+    @apply p-5 md:p-6;
+  }
+
+  .quest-hero {
+    @apply relative overflow-hidden rounded-[1.75rem] bg-primary p-6 text-primary-foreground shadow-lg md:p-8;
+  }
+
+  .quest-hero::after {
+    content: "";
+    position: absolute;
+    inset: auto -20% -40% auto;
+    width: 60%;
+    height: 80%;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgb(255 255 255 / 0.22), transparent 70%);
+    pointer-events: none;
+    animation: portalPulse 6s var(--ease-cinema) infinite;
+  }
+
+  .ticket {
+    @apply relative overflow-hidden rounded-[1.75rem] border border-border bg-card shadow-lg;
+  }
+
+  .ticket-stub {
+    @apply relative border-l border-dashed border-border bg-muted/60;
+  }
+
+  .points-pill {
+    @apply inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-1 text-xs font-bold text-primary-foreground;
+  }
+
+  .rail-btn {
+    @apply relative mx-2 flex h-11 items-center gap-3 rounded-2xl px-3 transition-[background-color,color,transform] duration-150;
+    color: hsl(var(--sidebar-foreground));
+  }
+
+  .rail-btn > svg {
+    @apply shrink-0;
+  }
+
+  .rail-btn:hover {
+    background: hsl(var(--primary) / 0.14);
+    color: hsl(var(--sidebar-foreground));
+  }
+
+  .rail-btn-active {
+    @apply bg-primary text-primary-foreground;
+  }
+
+  /* Game shortcuts: compact square tiles (collapsed) → full-width rows (expanded) */
+  .rail-game {
+    /* Collapsed: 52×52 square, icon+label stacked, centred */
+    @apply relative mx-2 flex shrink-0 flex-col items-center justify-center gap-0.5 rounded-xl text-center;
+    height: 52px;
+    width: 52px;
+    align-self: center;
+    color: hsl(var(--sidebar-foreground));
+    transition:
+      background-color 150ms ease,
+      color 150ms ease,
+      transform 150ms ease,
+      height 280ms var(--ease-out),
+      width 280ms var(--ease-out),
+      flex-direction 0s linear 280ms,
+      align-self 0s linear 280ms,
+      text-align 0s linear 280ms,
+      gap 280ms var(--ease-out),
+      padding 280ms var(--ease-out),
+      border-radius 280ms var(--ease-out);
+  }
+
+  .rail-game > svg {
+    @apply shrink-0;
+  }
+
+  .rail-game:hover {
+    background: hsl(var(--primary) / 0.14);
+    color: hsl(var(--sidebar-foreground));
+  }
+
+  .rail-game-active {
+    @apply bg-primary text-primary-foreground;
+  }
+
+  /* Expanded state: morph into a full-width row matching .rail-btn */
+  .club-rail:hover .rail-game,
+  .club-rail:focus-within .rail-game {
+    flex-direction: row;
+    align-self: stretch;
+    text-align: left;
+    width: auto;
+    height: 44px;
+    gap: 0.75rem;
+    padding: 0 0.75rem;
+    border-radius: 1rem;
+    transition:
+      background-color 150ms ease,
+      color 150ms ease,
+      transform 150ms ease,
+      height 280ms var(--ease-out),
+      width 280ms var(--ease-out),
+      flex-direction 0s,
+      align-self 0s,
+      text-align 0s,
+      gap 280ms var(--ease-out),
+      padding 280ms var(--ease-out),
+      border-radius 280ms var(--ease-out);
+  }
+
+  .rail-game-add {
+    @apply border border-dashed;
+    border-color: hsl(var(--sidebar-border));
+    color: hsl(var(--sidebar-foreground));
+  }
+
+  .rail-game-add:hover {
+    border-color: hsl(var(--primary));
+  }
+
+  html.dark .club-rail .rail-btn,
+  html.dark .club-rail .rail-game,
+  html.dark .club-rail .rail-game-add {
+    color: #f4f6fa;
+  }
+
+  html.dark .club-rail .rail-btn > svg,
+  html.dark .club-rail .rail-game > svg {
+    color: currentColor;
+  }
+
+  /* Collapsed label: tiny text below icon */
+  .rail-game-label {
+    display: block;
+    color: inherit !important;
+    width: 100%;
+    max-width: 3.1rem;
+    font-size: 8px;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: inherit;
+    opacity: 1;
+    transform: none;
+    transition: opacity 200ms var(--ease-out), max-width 280ms var(--ease-out), transform 280ms var(--ease-out), font-size 280ms var(--ease-out);
+  }
+
+  /* Expanded label: side-by-side, same style as .rail-label */
+  .club-rail:hover .rail-game-label,
+  .club-rail:focus-within .rail-game-label {
+    max-width: 140px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: normal;
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* Scale game-shortcut icons up to match rail-btn icon size when expanded */
+  .club-rail:hover .rail-game > svg,
+  .club-rail:focus-within .rail-game > svg {
+    width: 18px;
+    height: 18px;
+    transition: width 280ms var(--ease-out), height 280ms var(--ease-out);
+  }
+
+  .rail-divider {
+    @apply mx-4 my-1.5 h-px shrink-0;
+    background: hsl(var(--sidebar-border));
+  }
+
+  /* Netflix tile: lift + soft scale, no confusing motion */
+  .cabinet {
+    @apply relative flex flex-col overflow-hidden rounded-[1.5rem] border border-border bg-card shadow-sm;
+    transition: transform 280ms var(--ease-out), box-shadow 280ms var(--ease-cinema), border-color 200ms ease;
+  }
+
+  .cabinet:hover {
+    transform: translateY(-4px) scale(1.015);
+    box-shadow: var(--shadow-md);
+  }
+
+  .cabinet-top {
+    @apply flex items-center justify-between border-b border-border bg-muted/50 px-4 py-3;
+  }
+
+  /* Alias so leaderboard .panel references don't render unstyled */
+  .panel {
+    @apply rounded-[1.5rem] border border-border bg-card shadow-sm;
+  }
+  .panel-pad {
+    @apply p-5 md:p-6;
+  }
+
+  /* Leaderboard podium stage */
+  .scoreboard-stage {
+    @apply relative overflow-hidden rounded-[2rem] border border-border bg-gradient-to-b from-card to-muted/30 p-6 pb-0 shadow-md;
+  }
+
+  /* Live stat strip (challenges page top rail) */
+  .stat-rail {
+    @apply flex flex-wrap items-center gap-x-5 gap-y-2 rounded-2xl border border-border bg-card px-5 py-3 shadow-sm;
+  }
+
+  /* ── Shared interactive How-to (Cool Math strip) ── */
+  .howto-guide {
+    @apply relative overflow-hidden rounded-[1.5rem] border border-border bg-card p-5 shadow-sm md:p-6;
+  }
+
+  .howto-guide-head {
+    @apply mb-4 flex items-end justify-between gap-3;
+  }
+
+  .howto-kicker {
+    @apply text-[11px] font-bold uppercase tracking-[0.14em] text-primary;
+  }
+
+  .howto-title {
+    @apply mt-1 text-xl font-bold text-foreground md:text-2xl;
+    font-family: var(--font-heading);
+    letter-spacing: -0.03em;
+  }
+
+  .howto-progress-label {
+    @apply shrink-0 rounded-full bg-secondary px-3 py-1 text-[11px] font-bold text-secondary-foreground;
+  }
+
+  .howto-strip {
+    @apply m-0 grid list-none gap-3 p-0 md:grid-cols-3;
+  }
+
+  .howto-tile {
+    @apply flex items-stretch gap-3 rounded-2xl border border-border bg-muted/40 p-3 transition-[transform,box-shadow] duration-200;
+  }
+
+  .howto-tile:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .howto-tile-thumb {
+    @apply relative flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground;
+  }
+
+  .howto-tile-rank {
+    @apply absolute -left-1.5 -top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-foreground text-[11px] font-bold text-background;
+  }
+
+  .howto-tile-copy {
+    @apply min-w-0 flex-1;
+  }
+
+  .howto-tile-title {
+    @apply text-sm font-bold text-foreground;
+    font-family: var(--font-heading);
+  }
+
+  .howto-tile-body {
+    @apply mt-1 text-xs leading-relaxed text-muted-foreground md:text-[13px];
+  }
+
+  /* ── Cool Math arcade storefront ── */
+  .arcade-hero {
+    @apply relative min-h-[260px] overflow-hidden rounded-[1.5rem] shadow-lg;
+  }
+
+  .arcade-hero-img {
+    @apply absolute inset-0 h-full w-full object-cover transition-transform duration-500;
+  }
+
+  .arcade-hero:hover .arcade-hero-img {
+    transform: scale(1.03);
+  }
+
+  .arcade-hero-scrim {
+    @apply absolute inset-0;
+    background: linear-gradient(to top, rgb(0 0 0 / 0.78), rgb(0 0 0 / 0.2), transparent);
+  }
+
+  .arcade-hero-copy {
+    @apply relative z-10 flex h-full min-h-[260px] flex-col justify-end p-6 md:p-8;
+  }
+
+  .arcade-badge {
+    @apply inline-flex w-fit rounded-md bg-accent px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-accent-foreground;
+  }
+
+  .arcade-hero-title {
+    @apply mt-2 text-4xl font-bold text-white md:text-5xl;
+    font-family: var(--font-heading);
+  }
+
+  .arcade-hero-desc {
+    @apply mt-2 max-w-md text-sm text-white/85 md:text-base;
+  }
+
+  .arcade-play {
+    @apply mt-6 inline-flex items-center gap-2 self-start rounded-full bg-white px-4 py-2 text-sm font-bold text-foreground transition-transform;
+  }
+
+  .arcade-hero:hover .arcade-play {
+    transform: translateX(4px);
+  }
+
+  .arcade-row {
+    @apply flex items-center gap-3 rounded-2xl border border-border bg-card p-2.5 shadow-sm transition-[transform,box-shadow] duration-200;
+  }
+
+  .arcade-row:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .arcade-row-thumb {
+    @apply relative h-16 w-24 shrink-0 overflow-hidden rounded-xl bg-muted;
+  }
+
+  .arcade-rank {
+    @apply absolute bottom-1 left-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/75 text-[10px] font-bold text-white;
+  }
+
+  .arcade-tile {
+    @apply h-full overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-[transform,box-shadow] duration-200;
+  }
+
+  .arcade-tile:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: var(--shadow-md);
+  }
+
+  .arcade-tile-art {
+    @apply relative aspect-square overflow-hidden bg-muted;
+  }
+
+  .arcade-live {
+    @apply absolute left-2 top-2 rounded-md px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white shadow-sm;
+  }
+
+  .arcade-live-muted {
+    @apply bg-muted text-muted-foreground;
+  }
+
+  .arcade-tile-title {
+    @apply px-3 pt-2.5 text-sm font-bold leading-tight;
+    font-family: var(--font-heading);
+  }
+
+  .arcade-tile-desc {
+    @apply px-3 pb-3 pt-1 text-[11px] leading-snug text-muted-foreground line-clamp-2;
+  }
+}
+
+@layer utilities {
+  .pressable {
+    transition: transform var(--duration-exit) var(--ease-out), background-color 150ms ease, box-shadow 150ms ease;
+  }
+  .pressable:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
+  /* Apple-style reveal: fade + rise, no bounce chaos */
+  @keyframes cinemaIn {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+      filter: blur(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+  }
+
+  @keyframes riseIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes orbDrift {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to { transform: translate3d(1.5%, -1.2%, 0) scale(1.04); }
+  }
+
+  @keyframes portalPulse {
+    0%, 100% { opacity: 0.55; transform: scale(1); }
+    50% { opacity: 0.9; transform: scale(1.08); }
+  }
+
+  .cinema-in {
+    animation: cinemaIn var(--duration-enter) var(--ease-out) both;
+  }
+
+  .rise-in {
+    animation: riseIn var(--duration-enter) var(--ease-out) both;
+  }
+
+  .stagger-1 { animation-delay: 40ms; }
+  .stagger-2 { animation-delay: 80ms; }
+  .stagger-3 { animation-delay: 120ms; }
+  .stagger-4 { animation-delay: 160ms; }
+}
+
+html { scroll-behavior: smooth; }

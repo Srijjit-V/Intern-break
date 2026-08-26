@@ -1,0 +1,10 @@
+{
+  "title": "Snake",
+  "description": "Classic snake — eat apples, grow, don't bite yourself.",
+  "instructions": "Arrow keys or WASD to move. Eat apples to grow. Don't hit yourself!",
+  "pointsLabel": "+10 pts per apple eaten",
+  "startButton": "Start Game",
+  "playAgainButton": "Play Again",
+  "topScoresTitle": "Top Scores",
+  "noScoresText": "No scores yet — be the first!"
+}
