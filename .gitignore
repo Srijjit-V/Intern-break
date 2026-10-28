@@ -69,7 +69,6 @@ pids
 .ssl/*.pem
 
 # AI Assistant Files
-.claude/
 
 # Import temporary files
 .import-*
