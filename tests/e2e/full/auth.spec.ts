@@ -30,7 +30,7 @@ test('duplicate sign up shows an error', async ({ browser, page }) => {
   const ctx2 = await browser.newContext();
   const p2 = await ctx2.newPage();
   await p2.goto('signup');
-  await p2.getByPlaceholder(/name/i).first().fill('Dup Two');
+  await p2.locator('input[type=text]').first().fill('Dup Two');
   await p2.locator('input[type=email]').fill(email);
   await p2.locator('input[type=password]').fill(PASSWORD);
   await p2.locator('button[type=submit]').click();
