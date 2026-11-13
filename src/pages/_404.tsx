@@ -6,7 +6,7 @@ export default function NotFoundPage() {
       <Helmet>
         <title>404: Intern Not Found | Intern Break Space</title>
         <meta name="description" content="Restore your route to the Intern Break Space portal." />
-        <link rel="canonical" href="https://sprtslp.com/404" />
+        <link rel="canonical" href="/404" />
       </Helmet>
       <main className="flex min-h-screen items-center justify-center bg-background px-5 py-10 text-center">
       <section className="w-full max-w-xl rounded-[2rem] border border-border bg-card p-8 shadow-lg md:p-12">

@@ -198,7 +198,7 @@ export default function AdminPage() {
 
   function copyRoomLink() {
     if (!user) return;
-    const roomLink = `${window.location.origin}/?room=${encodeURIComponent(user.roomCode ?? '')}`;
+    const roomLink = `${window.location.origin}${import.meta.env.BASE_URL}?room=${encodeURIComponent(user.roomCode ?? '')}`;
     navigator.clipboard.writeText(roomLink).catch(() => {});
     setShareCopied(true);
     setTimeout(() => setShareCopied(false), 1500);

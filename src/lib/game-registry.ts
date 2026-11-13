@@ -43,47 +43,47 @@ export const GAME_REGISTRY: Record<GameId, GameMetadata> = {
   flappy: {
     id: 'flappy', path: '/flappy', name: 'Flappy Bird', shortName: 'Flappy',
     description: "Tap to flap through the pipes. Don't crash.",
-    concept: 'Arcade flight challenge', accent: '#38bdf8', icon: Bird, iconClassName: 'text-sky-600', thumbnail: '/airo-assets/images/games/flappy-thumbnail', live: true,
+    concept: 'Arcade flight challenge', accent: '#38bdf8', icon: Bird, iconClassName: 'text-sky-600', thumbnail: `${import.meta.env.BASE_URL}games/flappy.svg`, live: true,
   },
   freezeria: {
     id: 'freezeria', path: '/freezeria', name: "Papa's Freezeria", shortName: 'Freezeria',
     description: 'Build sundaes, take orders, and keep the line moving.',
-    concept: 'Sundae shop challenge', accent: '#fb7185', icon: IceCreamBowl, iconClassName: 'text-pink-600', thumbnail: '/airo-assets/images/games/freezeria-thumbnail', live: true,
+    concept: 'Sundae shop challenge', accent: '#fb7185', icon: IceCreamBowl, iconClassName: 'text-pink-600', thumbnail: `${import.meta.env.BASE_URL}games/freezeria.svg`, live: true,
   },
   snake: {
     id: 'snake', path: '/snake', name: 'Snake', shortName: 'Snake',
     description: "Eat apples, grow longer, and don't bite yourself.",
-    concept: 'Classic arcade challenge', accent: '#10b981', icon: Worm, iconClassName: 'text-emerald-600', thumbnail: '/airo-assets/images/games/snake-thumbnail', live: true,
+    concept: 'Classic arcade challenge', accent: '#10b981', icon: Worm, iconClassName: 'text-emerald-600', thumbnail: `${import.meta.env.BASE_URL}games/snake.svg`, live: true,
   },
   memory: {
     id: 'memory', path: '/memory', name: 'Memory Match', shortName: 'Memory',
     description: 'Flip cards and find matching pairs.',
-    concept: 'Card matching challenge', accent: '#a78bfa', icon: Brain, iconClassName: 'text-violet-600', thumbnail: '/airo-assets/images/games/memory-thumbnail', live: true,
+    concept: 'Card matching challenge', accent: '#a78bfa', icon: Brain, iconClassName: 'text-violet-600', thumbnail: `${import.meta.env.BASE_URL}games/memory.svg`, live: true,
   },
   trivia: {
     id: 'trivia', path: '/trivia', name: 'Trivia Blitz', shortName: 'Trivia',
     description: 'Answer fast and climb the high-score board.',
-    concept: 'Fast trivia challenge', accent: '#fbbf24', icon: CircleHelp, iconClassName: 'text-amber-600', thumbnail: '/airo-assets/images/games/trivia-thumbnail', live: true,
+    concept: 'Fast trivia challenge', accent: '#fbbf24', icon: CircleHelp, iconClassName: 'text-amber-600', thumbnail: `${import.meta.env.BASE_URL}games/trivia.svg`, live: true,
   },
   set: {
     id: 'set', path: '/set', name: 'Set with Friends', shortName: 'Set',
     description: 'Find sets of three cards before time runs out.',
-    concept: 'Pattern-matching challenge', accent: '#e879f9', icon: Shapes, iconClassName: 'text-rose-600', thumbnail: '/airo-assets/images/games/set-with-friends-thumbnail', live: true,
+    concept: 'Pattern-matching challenge', accent: '#e879f9', icon: Shapes, iconClassName: 'text-rose-600', thumbnail: `${import.meta.env.BASE_URL}games/set.svg`, live: true,
   },
   crossy: {
     id: 'crossy', path: '/crossy', name: 'Crossy Road', shortName: 'Crossy',
     description: 'Cross the road, dodge traffic, and keep hopping.',
-    concept: 'Road-crossing challenge', accent: '#fb923c', icon: Bird, iconClassName: 'text-orange-600', thumbnail: '/airo-assets/images/games/crossy-thumbnail', live: true,
+    concept: 'Road-crossing challenge', accent: '#fb923c', icon: Bird, iconClassName: 'text-orange-600', thumbnail: `${import.meta.env.BASE_URL}games/crossy.svg`, live: true,
   },
   typing: {
     id: 'typing', path: '/typing', name: 'Speed Typing', shortName: 'Typing',
     description: 'Type as fast and accurately as you can.',
-    concept: 'Typing speed challenge', accent: '#6366f1', icon: Keyboard, iconClassName: 'text-indigo-600', thumbnail: '/airo-assets/images/games/typing-thumbnail', live: true,
+    concept: 'Typing speed challenge', accent: '#6366f1', icon: Keyboard, iconClassName: 'text-indigo-600', thumbnail: `${import.meta.env.BASE_URL}games/typing.svg`, live: true,
   },
   'typing-race': {
     id: 'typing-race', path: '/typing-race', name: 'Typing Race', shortName: 'Race',
     description: 'Pick a car, race your room, and use nitro to clear tough words.',
-    concept: 'Competitive typing race', accent: '#0891b2', icon: CarFront, iconClassName: 'text-cyan-700', thumbnail: '/airo-assets/images/games/typing-race-thumbnail', live: true,
+    concept: 'Competitive typing race', accent: '#0891b2', icon: CarFront, iconClassName: 'text-cyan-700', thumbnail: `${import.meta.env.BASE_URL}games/typing-race.svg`, live: true,
   },
 };
 

@@ -1,0 +1,51 @@
+# One command: cp .env.example .env && docker compose up --build
+# App: http://localhost:3000  (bound to localhost only)
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASS:?set DB_ROOT_PASS in .env}
+      MYSQL_DATABASE: ${DB_NAME:-intern_break}
+      MYSQL_USER: ${DB_USER:-intern}
+      MYSQL_PASSWORD: ${DB_PASS:?set DB_PASS in .env}
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  migrate:
+    build: .
+    command: ["npx", "tsx", "scripts/migrate.ts"]
+    environment: &appenv
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_USER: ${DB_USER:-intern}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME:-intern_break}
+      DB_SSL: "false"
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?set BETTER_AUTH_SECRET in .env}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3000}
+      BETTER_AUTH_TRUSTED_ORIGINS: ${BETTER_AUTH_TRUSTED_ORIGINS:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  app:
+    build: .
+    environment:
+      <<: *appenv
+      PORT: "3000"
+    ports:
+      - "127.0.0.1:${PORT:-3000}:3000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+volumes:
+  db-data:

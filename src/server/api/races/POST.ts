@@ -2,7 +2,8 @@ import type { Request, Response } from 'express';
 import { and, eq, sql } from 'drizzle-orm';
 import { getAuth } from '@/lib/auth/auth';
 import { db } from '../../db/client.js';
-import { typingRaceParticipants, typingRaces } from '../../db/schema.js';
+import { isLobbyOverdue } from '../../race-lobby';
+import { companyMembers, typingRaceParticipants, typingRaces } from '../../db/schema.js';
 
 // Real racing games cap lobby size and treat it as a hard server-side rule,
 // not a client-side display slice — otherwise a 6th+ joiner can sit in the
@@ -24,6 +25,10 @@ export default async function handler(req: Request, res: Response) {
     if (!session?.user) return res.status(401).json({ error: 'Sign in required' });
     const { action, roomCode, raceId, passage, displayName, color, progress, accuracy, wpm, finished } = req.body ?? {};
     if (!action || !roomCode) return res.status(400).json({ error: 'action and roomCode are required' });
+    // Races are private to the room: only its members may start, join or read them.
+    const membership = await db.select({ id: companyMembers.id }).from(companyMembers)
+      .where(and(eq(companyMembers.roomCode, roomCode), eq(companyMembers.accountId, session.user.id))).limit(1);
+    if (!membership[0]) return res.status(403).json({ error: 'You are not a member of this room' });
 
     if (action === 'start') {
       if (!passage || !displayName || !color) return res.status(400).json({ error: 'passage, displayName, and color are required' });
@@ -33,7 +38,21 @@ export default async function handler(req: Request, res: Response) {
         .limit(1);
       const existingRace = openRaces[0];
 
+      // A lobby is stale only after 10 minutes with no activity from the race or any participant.
+      let lobbyIsStale = false;
       if (existingRace?.status === 'lobby') {
+        const lobbyRows = await db.select().from(typingRaceParticipants).where(eq(typingRaceParticipants.raceId, existingRace.id));
+        const lastActivity = Math.max(new Date(existingRace.updatedAt).getTime(), ...lobbyRows.map((p) => new Date(p.updatedAt).getTime()));
+        const overdue = isLobbyOverdue(existingRace.createdAt, lastActivity, Date.now());
+        if (overdue) {
+          // The guarded update's row count decides: if someone else changed the race first, treat it as live.
+          const [closed] = await db.update(typingRaces).set({ status: 'finished', updatedAt: new Date() })
+            .where(and(eq(typingRaces.id, existingRace.id), eq(typingRaces.status, 'lobby')));
+          lobbyIsStale = Number(closed.affectedRows) === 1;
+        }
+      }
+
+      if (existingRace?.status === 'lobby' && !lobbyIsStale) {
         const lobbyParticipants = await db.select().from(typingRaceParticipants).where(eq(typingRaceParticipants.raceId, existingRace.id));
         const alreadyIn = lobbyParticipants.some((participant) => participant.accountId === session.user.id);
         if (!alreadyIn && lobbyParticipants.length >= MAX_RACERS) {
@@ -46,7 +65,7 @@ export default async function handler(req: Request, res: Response) {
         return res.json({ race: existingRace, participants });
       }
 
-      if (existingRace) {
+      if (existingRace && !lobbyIsStale) {
         const participants = await db.select().from(typingRaceParticipants).where(eq(typingRaceParticipants.raceId, existingRace.id));
         const isOnlyParticipant = participants.length === 1 && participants[0].accountId === session.user.id;
         const isStale = (existingRace.status === 'countdown' && (!existingRace.startsAt || new Date(existingRace.startsAt).getTime() + 15000 < Date.now()))
