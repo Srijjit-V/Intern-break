@@ -56,7 +56,7 @@ export default function SignupPage() {
       <Helmet>
         <title>Create Account | Intern Break Space</title>
         <meta name="description" content="Create an Intern Break Space account to keep your rooms and profiles together." />
-        <link rel="canonical" href="https://sprtslp.com/signup" />
+        <link rel="canonical" href="/signup" />
         <meta name="robots" content="noindex" />
       </Helmet>
       <main className="ambient-stage min-h-screen px-4 py-10">

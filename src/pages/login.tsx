@@ -49,7 +49,7 @@ export default function LoginPage() {
       <Helmet>
         <title>Sign In | Intern Break Space</title>
         <meta name="description" content="Sign in to access your Intern Break Space account and room history." />
-        <link rel="canonical" href="https://sprtslp.com/login" />
+        <link rel="canonical" href="/login" />
         <meta name="robots" content="noindex" />
       </Helmet>
       <main className="ambient-stage min-h-screen px-4 py-10">

@@ -44,21 +44,24 @@ test.describe('two users in one room', () => {
     const otherCode = await createRoom(outsider.page, 'Other Co', 'Outsider Oz');
     expect(otherCode).not.toBe(code);
 
-    // A opens the race page and creates the lobby.
+    // A opens the lobby.
     await a.page.goto('typing-race');
     await a.page.getByRole('button', { name: /Go to Race/i }).first().click();
     await a.page.getByRole('button', { name: 'Start Race' }).click();
-    await expect(a.page.getByText(/1\/5 racers|1 racer/)).toBeVisible();
+    await expect(a.page.getByText(/1\/5 racers/)).toBeVisible();
 
-    // B joins the lobby (polling, up to ~1s) and sees both racers.
+    // B sees the open lobby (polling, about 1s) and joins it.
     await b.page.goto('typing-race');
     await b.page.getByRole('button', { name: /Go to Race/i }).first().click();
-    await expect(b.page.getByText(/2\/5 racers|Racer Ann/).first()).toBeVisible({ timeout: 15_000 });
-    await b.page.getByRole('button', { name: /Start Race|Join|Ready/i }).first().click();
+    await b.page.getByRole('button', { name: 'Join Live Race' }).click({ timeout: 15_000 });
+    await expect(b.page.getByText(/2\/5 racers/)).toBeVisible({ timeout: 15_000 });
+    await expect(a.page.getByText(/2\/5 racers/)).toBeVisible({ timeout: 15_000 });
 
-    // Countdown appears for both.
+    // Both ready up; the countdown starts for both.
+    await a.page.getByRole('button', { name: 'Ready up' }).click();
+    await b.page.getByRole('button', { name: 'Ready up' }).click();
     await expect(a.page.getByText(/Countdown started|Everyone is ready/i).first()).toBeVisible({ timeout: 15_000 });
-    await expect(b.page.getByText(/Countdown started|Everyone is ready|Race starting/i).first()).toBeVisible({ timeout: 15_000 });
+    await expect(b.page.getByText(/Countdown started|Everyone is ready/i).first()).toBeVisible({ timeout: 15_000 });
 
     // Outsider's room sees no race of ours.
     const other = await outsider.page.request.get(`api/races?roomCode=${otherCode}`);
@@ -68,20 +71,28 @@ test.describe('two users in one room', () => {
     const join = await outsider.page.request.post('api/races', { data: { action: 'start', roomCode: code, passage: 'x y z', displayName: 'Outsider Oz', color: '#fff' } });
     expect(join.status()).toBe(403);
 
-    // Race goes active; A types the whole passage and finishes first.
+    // Race goes active; A types the whole passage and finishes first, B follows.
     const passage = await racePassage(a.page, code);
-    const input = a.page.locator('input').last();
-    await expect(input).toBeEnabled({ timeout: 20_000 });
-    await input.click();
-    await a.page.keyboard.type(passage.slice(0, 120), { delay: 8 });
+    const typeAll = async (page: Page) => {
+      const input = page.locator('input:not([disabled])').last();
+      await expect(input).toBeEnabled({ timeout: 25_000 });
+      await input.click();
+      await page.keyboard.type(passage + ' ', { delay: 6 });
+    };
+    await typeAll(a.page);
 
-    // B sees A's progress move on their own screen without reloading.
+    // B sees A's progress on their own screen's data without reloading.
     await expect.poll(async () => {
-      const r = await b.page.request.get(`api/races?roomCode=${code}`);
-      const j = await r.json();
-      const ann = (j.participants ?? []).find((p: { displayName: string }) => p.displayName === 'Racer Ann');
-      return ann?.progress ?? 0;
-    }, { timeout: 15_000 }).toBeGreaterThan(0);
+      const j = await (await b.page.request.get(`api/races?roomCode=${code}`)).json();
+      return (j.participants ?? []).find((p: { displayName: string }) => p.displayName === 'Racer Ann')?.progress ?? 0;
+    }, { timeout: 15_000 }).toBe(100);
+
+    await typeAll(b.page);
+
+    // Both finished: the race closes, and Ann crossed the line before Ben.
+    await expect.poll(async () => (await (await a.page.request.get(`api/races?roomCode=${code}`)).json()).race, { timeout: 20_000 }).toBeNull();
+    await expect(a.page.getByText(/Racer Ben/).first()).toBeVisible({ timeout: 15_000 });
+    await expect(b.page.getByText(/Racer Ann/).first()).toBeVisible({ timeout: 15_000 });
 
     await a.ctx.close(); await b.ctx.close(); await outsider.ctx.close();
   });
