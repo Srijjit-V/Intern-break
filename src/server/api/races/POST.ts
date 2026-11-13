@@ -37,7 +37,12 @@ export default async function handler(req: Request, res: Response) {
         .limit(1);
       const existingRace = openRaces[0];
 
-      if (existingRace?.status === 'lobby') {
+      const lobbyIsStale = existingRace?.status === 'lobby' && new Date(existingRace.updatedAt).getTime() + 600000 < Date.now();
+      if (lobbyIsStale) {
+        await db.update(typingRaces).set({ status: 'finished', updatedAt: new Date() }).where(eq(typingRaces.id, existingRace.id));
+      }
+
+      if (existingRace?.status === 'lobby' && !lobbyIsStale) {
         const lobbyParticipants = await db.select().from(typingRaceParticipants).where(eq(typingRaceParticipants.raceId, existingRace.id));
         const alreadyIn = lobbyParticipants.some((participant) => participant.accountId === session.user.id);
         if (!alreadyIn && lobbyParticipants.length >= MAX_RACERS) {
@@ -50,7 +55,7 @@ export default async function handler(req: Request, res: Response) {
         return res.json({ race: existingRace, participants });
       }
 
-      if (existingRace) {
+      if (existingRace && !lobbyIsStale) {
         const participants = await db.select().from(typingRaceParticipants).where(eq(typingRaceParticipants.raceId, existingRace.id));
         const isOnlyParticipant = participants.length === 1 && participants[0].accountId === session.user.id;
         const isStale = (existingRace.status === 'countdown' && (!existingRace.startsAt || new Date(existingRace.startsAt).getTime() + 15000 < Date.now()))

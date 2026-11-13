@@ -29,11 +29,13 @@ export default async function handler(req: Request, res: Response) {
     const participants = await db.select().from(typingRaceParticipants).where(eq(typingRaceParticipants.raceId, race.id));
     const now = Date.now();
     const isExpiredCountdown = race.status === 'countdown' && (!race.startsAt || new Date(race.startsAt).getTime() + 15000 < now);
+    // A lobby nobody readied up in 10 minutes is abandoned, so it cannot block the room.
+    const isAbandonedLobby = race.status === 'lobby' && new Date(race.updatedAt).getTime() + 600000 < now;
     const isAbandonedActiveRace = race.status === 'active'
       && participants.length <= 1
       && new Date(race.updatedAt).getTime() + 120000 < now;
 
-    if (isExpiredCountdown || isAbandonedActiveRace) {
+    if (isExpiredCountdown || isAbandonedActiveRace || isAbandonedLobby) {
       await db.update(typingRaces).set({ status: 'finished', updatedAt: new Date() }).where(eq(typingRaces.id, race.id));
       return res.json({ race: null, participants: [] });
     }
