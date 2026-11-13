@@ -1,0 +1,174 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: "22"
+
+jobs:
+  quality:
+    name: quality (lint, type-check, unit tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run type-check
+      - name: Unit tests
+        run: npx vitest run --reporter=default --reporter=json --outputFile.json=test-results/unit.json
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: quality-results
+          path: test-results/
+
+  database:
+    name: database (MySQL migrations and seed)
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: ci-root
+          MYSQL_DATABASE: intern_break
+          MYSQL_USER: intern
+          MYSQL_PASSWORD: ci-pass
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -pci-root --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: "3306"
+      DB_USER: intern
+      DB_PASS: ci-pass
+      DB_NAME: intern_break
+      BETTER_AUTH_SECRET: ci-secret-ci-secret-ci-secret-ci-secret
+      BETTER_AUTH_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: Migrations apply to an empty database
+        run: npm run db:migrate
+      - name: Migrations are idempotent
+        run: npm run db:migrate
+      - name: Schema has no drift from drizzle/
+        run: |
+          npx drizzle-kit generate
+          git diff --exit-code drizzle/ || (echo "schema.ts changed without a migration" && exit 1)
+      - name: Seed twice (idempotent)
+        run: |
+          npm run db:seed
+          npm run db:seed | tee seed.log
+          mkdir -p test-results && cp seed.log test-results/seed.log
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: database-results
+          path: test-results/
+
+  browser:
+    name: browser (Playwright e2e, demo and two-user race)
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: ci-root
+          MYSQL_DATABASE: intern_break
+          MYSQL_USER: intern
+          MYSQL_PASSWORD: ci-pass
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -pci-root --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CI: "true"
+      DB_HOST: 127.0.0.1
+      DB_PORT: "3306"
+      DB_USER: intern
+      DB_PASS: ci-pass
+      DB_NAME: intern_break
+      BETTER_AUTH_SECRET: ci-secret-ci-secret-ci-secret-ci-secret
+      BETTER_AUTH_URL: http://localhost:3000
+      PORT: "3000"
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run db:migrate
+      - run: npm run build
+      - name: Start the app
+        run: |
+          nohup npm start > server.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf localhost:3000/api/health && exit 0; sleep 2; done
+          cat server.log; exit 1
+      - name: E2E against the full stack (includes the two-user race)
+        run: npx playwright test --project=full
+      - name: Build and serve the static demo
+        run: |
+          npm run build:pages
+          VITE_BASE_PATH=/Intern-break/ nohup npx vite preview --outDir dist/pages --port 4173 --strictPort > preview.log 2>&1 &
+          for i in $(seq 1 15); do curl -sf localhost:4173/Intern-break/ >/dev/null && exit 0; sleep 2; done
+          cat preview.log; exit 1
+      - name: E2E against the demo
+        run: npx playwright test --project=demo
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: browser-results
+          path: |
+            test-results/
+            playwright-report/
+            server.log
+
+  containers:
+    name: containers (image build and compose smoke test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Prepare .env
+        run: |
+          cp .env.example .env
+          sed -i "s#^BETTER_AUTH_SECRET=.*#BETTER_AUTH_SECRET=$(openssl rand -base64 32)#" .env
+      - name: docker compose up
+        run: docker compose up --build -d --wait --wait-timeout 180
+      - name: Smoke test
+        run: |
+          mkdir -p test-results
+          curl -sf localhost:3000/api/health | tee test-results/health.json
+          curl -sf -X POST localhost:3000/api/auth/sign-up/email \
+            -H 'content-type: application/json' -H 'origin: http://localhost:3000' \
+            -d '{"email":"ci@example.test","password":"password-12345","name":"CI"}' | tee test-results/signup.json
+      - name: Logs
+        if: always()
+        run: docker compose logs > test-results/compose.log || true
+      - run: docker compose down -v
+        if: always()
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: containers-results
+          path: test-results/

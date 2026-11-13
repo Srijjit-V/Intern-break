@@ -1,0 +1,25 @@
+name: Bug report
+description: Something is broken
+labels: [bug]
+body:
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Numbered steps, starting from a fresh sign up if possible.
+    validations: {required: true}
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior
+    validations: {required: true}
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Where did it happen?
+      options: [Full stack (Docker or hosted), Static demo (GitHub Pages), Local dev server]
+    validations: {required: true}
+  - type: input
+    id: env
+    attributes:
+      label: Browser and OS
