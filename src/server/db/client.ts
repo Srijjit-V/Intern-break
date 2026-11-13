@@ -25,7 +25,9 @@ const poolConnection = mysql.createPool({
 
 // Make the MySQL session agree with `timezone: 'Z'`, whatever the server's own zone is.
 poolConnection.pool.on('connection', (connection) => {
-  connection.query("SET time_zone = '+00:00'");
+  connection.query("SET time_zone = '+00:00'", (error: Error | null) => {
+    if (error) console.error('db.timezone.set-failed', { error: error.message });
+  });
 });
 
 // Create Drizzle instance

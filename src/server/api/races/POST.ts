@@ -42,10 +42,13 @@ export default async function handler(req: Request, res: Response) {
       if (existingRace?.status === 'lobby') {
         const lobbyRows = await db.select().from(typingRaceParticipants).where(eq(typingRaceParticipants.raceId, existingRace.id));
         const lastActivity = Math.max(new Date(existingRace.updatedAt).getTime(), ...lobbyRows.map((p) => new Date(p.updatedAt).getTime()));
-        lobbyIsStale = lastActivity + 600000 < Date.now();
-        if (lobbyIsStale) {
-          await db.update(typingRaces).set({ status: 'finished', updatedAt: new Date() })
+        // Idle for 10 minutes, or open for 30 minutes whatever the activity (re-joining cannot keep a lobby alive forever).
+        const overdue = lastActivity + 600000 < Date.now() || new Date(existingRace.createdAt).getTime() + 1800000 < Date.now();
+        if (overdue) {
+          // The guarded update's row count decides: if someone else changed the race first, treat it as live.
+          const [closed] = await db.update(typingRaces).set({ status: 'finished', updatedAt: new Date() })
             .where(and(eq(typingRaces.id, existingRace.id), eq(typingRaces.status, 'lobby')));
+          lobbyIsStale = Number(closed.affectedRows) === 1;
         }
       }
 
