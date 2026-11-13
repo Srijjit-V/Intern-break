@@ -175,7 +175,7 @@ function races(db: Db, method: string, query: URLSearchParams, body: Json): Resp
   return json({ ok: true, race: r.race, participants: r.participants });
 }
 
-export function installFakeApi(): void {
+export function installDemoApi(): void {
   const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
     const req = input instanceof Request ? input : null;

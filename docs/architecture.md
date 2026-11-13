@@ -6,7 +6,7 @@ One Express process serves the API, the server-rendered shell and the built clie
 flowchart LR
   B[Browser<br/>React 19 SPA]:::client
   D[Demo build<br/>VITE_DEMO_MODE]:::demo
-  F[In-browser fake API<br/>localStorage]:::demo
+  F[In-browser demo API<br/>localStorage]:::demo
   S[Express 5<br/>API + SSR shell + static files]:::server
   A[better-auth<br/>email and password]:::server
   O[Drizzle ORM]:::server
@@ -62,4 +62,4 @@ flowchart LR
 
 - **Roles are server-decided.** The first member of an empty room is admin; the client cannot choose a role.
 - **Same origin.** better-auth uses `window.location.origin` and cookie sessions, so the API and client must share an origin.
-- **Demo mode gates at the edges.** `src/lib/demo/fake-api.ts` replaces `fetch` for `/api`, and `src/lib/auth/auth-client.tsx` supplies a local session. Pages are unchanged.
+- **Demo mode gates at the edges.** `src/lib/demo/demo-api.ts` replaces `fetch` for `/api`, and `src/lib/auth/auth-client.tsx` supplies a local session. Pages are unchanged.

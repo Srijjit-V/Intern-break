@@ -60,7 +60,7 @@ Open http://localhost:3000.
 flowchart LR
   B[Browser<br/>React 19 SPA]:::client
   D[Demo build<br/>VITE_DEMO_MODE]:::demo
-  F[In-browser fake API<br/>localStorage]:::demo
+  F[In-browser demo API<br/>localStorage]:::demo
   S[Express 5<br/>API, SSR shell, static files]:::server
   A[better-auth<br/>email and password]:::server
   O[Drizzle ORM]:::server
@@ -96,7 +96,7 @@ More diagrams (Typing Race lifecycle, points flow) are in [docs/architecture.md]
 - [src/server/api/company/POST.ts](src/server/api/company/POST.ts): rooms, points sync, rewards
 - [src/server/db/config.ts](src/server/db/config.ts): environment-driven DB config
 - [src/server/db/schema.ts](src/server/db/schema.ts): tables
-- [src/lib/demo/fake-api.ts](src/lib/demo/fake-api.ts): the in-browser API used by the demo
+- [src/lib/demo/demo-api.ts](src/lib/demo/demo-api.ts): the in-browser API used by the demo
 - [src/lib/ibs-store.ts](src/lib/ibs-store.ts): client-side points and scores
 - [tests/e2e/full/cross-play.spec.ts](tests/e2e/full/cross-play.spec.ts): the two-user race test
 
@@ -134,4 +134,4 @@ Not done or not verified:
 
 ## License
 
-This project is currently unlicensed for external use: all rights reserved.
+MIT, see [LICENSE](LICENSE).
