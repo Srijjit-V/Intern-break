@@ -56,6 +56,8 @@ export default async function handler(req: Request, res: Response) {
           accountId: session.user.id,
           name: memberName || legacyMember.name,
           color: color || legacyMember.color,
+          // Claiming by display name proves nothing, so never inherit admin rights.
+          role: legacyMember.role === 'admin' || legacyMember.role === 'coadmin' ? 'employee' : legacyMember.role,
           points: Math.max(legacyMember.points, localPoints),
           allTimePoints: Math.max(legacyMember.allTimePoints, localAllTimePoints),
           carryoverPoints: Math.max(legacyMember.carryoverPoints, localCarryoverPoints),
@@ -122,9 +124,11 @@ export default async function handler(req: Request, res: Response) {
       if (!member[0]) return res.status(404).json({ error: 'Member not found' });
       const cost = Number(points);
       if (!Number.isInteger(cost) || cost <= 0) return res.status(400).json({ error: 'points must be a positive integer' });
-      const available = member[0].carryoverPoints;
-      if (available < cost) return res.status(400).json({ error: 'Not enough points' });
-      await db.update(companyMembers).set({ carryoverPoints: available - cost }).where(eq(companyMembers.id, member[0].id));
+      // Atomic conditional debit: two concurrent redeems cannot both spend the same balance.
+      const debit = await db.update(companyMembers)
+        .set({ carryoverPoints: sql`${companyMembers.carryoverPoints} - ${cost}` })
+        .where(and(eq(companyMembers.id, member[0].id), sql`${companyMembers.carryoverPoints} >= ${cost}`));
+      if (Number(debit[0].affectedRows) !== 1) return res.status(400).json({ error: 'Not enough points' });
       const result = await db.insert(rewardRedemptions).values({ roomCode, memberName: member[0].name, rewardName, points: cost });
       return res.status(201).json({ ok: true, redemptionId: Number(result[0].insertId) });
     }
