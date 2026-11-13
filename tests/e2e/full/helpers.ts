@@ -13,7 +13,7 @@ export function trackErrors(page: Page): string[] {
 
 export async function signUp(page: Page, name: string, email = uniqueEmail('user')) {
   await page.goto('signup');
-  await page.getByPlaceholder(/name/i).first().fill(name);
+  await page.locator('input[type=text]').first().fill(name);
   await page.locator('input[type=email]').fill(email);
   await page.locator('input[type=password]').fill(PASSWORD);
   await page.locator('button[type=submit]').click();
