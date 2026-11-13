@@ -18,7 +18,7 @@ export async function authHandler(req: Request, res: Response) {
   // state with no thrown error to surface, leaving the app blank; the cookie is
   // HttpOnly so only the server can expire it. Handled before getAuth() so it
   // still works when auth/db is itself unavailable.
-  if (tryClearStaleSession(req, res, { preview: process.env.AIRO_PREVIEW === 'true' })) {
+  if (tryClearStaleSession(req, res, { preview: process.env.COOKIE_CROSS_SITE === 'true' })) {
     return;
   }
 
@@ -32,7 +32,7 @@ export async function authHandler(req: Request, res: Response) {
     if (message.includes('BETTER_AUTH_SECRET')) {
       console.error(JSON.stringify({ event: 'auth.error', reason: 'missing_secret' }));
       res.status(503).json({
-        error: 'Authentication not configured. Set BETTER_AUTH_SECRET via requestSecrets().',
+        error: 'Authentication not configured. Set BETTER_AUTH_SECRET.',
       });
       return;
     }
@@ -40,7 +40,7 @@ export async function authHandler(req: Request, res: Response) {
     if (message.includes('Database not configured') || message.includes('SQLITE') || message.includes('ECONNREFUSED')) {
       console.error(JSON.stringify({ event: 'auth.error', reason: 'database_unavailable' }));
       res.status(503).json({
-        error: 'Database not available. Ensure the database skill is installed and configured.',
+        error: 'Database not available. Check the DB_* settings.',
       });
       return;
     }

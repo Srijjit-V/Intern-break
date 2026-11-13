@@ -165,7 +165,7 @@ if (corsOrigins.length === 0) {
   corsOrigins.push("*");
 }
 
-export default defineConfig(({ mode, isSsrBuild }) => ({
+export default defineConfig(({ isSsrBuild }) => ({
   envPrefix: ["VITE_", "SITE_"],
 
   plugins: [

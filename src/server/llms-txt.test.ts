@@ -156,15 +156,14 @@ describe("llmsTxtHandler", () => {
 	it("serves a well-formed file with the right headers on a customer host", () => {
 		const { res, calls } = mockRes();
 		llmsTxtHandler(reqFor("acme.com"), res);
-		// Default siteMeta is unseeded, so H1 falls back to the hostname and
-		// the default seoRoutes ("/") produces a single Home link.
+		// The H1 comes from siteMeta (the app name); links use the request host.
 		expect(calls.status).toBeUndefined(); // no explicit status => Express 200
 		expect(calls.contentType).toBe("text/plain");
 		expect(calls.headers["Cache-Control"]).toBe(
 			"public, max-age=60, must-revalidate",
 		);
 		expect(calls.headers["Vary"]).toBe("Host");
-		expect(calls.body).toContain("# acme.com");
+		expect(calls.body).toContain("# Intern Break Space");
 		expect(calls.body).toContain("## Pages");
 		expect(calls.body).toContain("- [Home](https://acme.com/)");
 	});

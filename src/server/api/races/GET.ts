@@ -23,7 +23,7 @@ export default async function handler(req: Request, res: Response) {
     let race = races[0];
     if (!race) return res.json({ race: null, participants: [] });
 
-    let participants = await db.select().from(typingRaceParticipants).where(eq(typingRaceParticipants.raceId, race.id));
+    const participants = await db.select().from(typingRaceParticipants).where(eq(typingRaceParticipants.raceId, race.id));
     const now = Date.now();
     const isExpiredCountdown = race.status === 'countdown' && (!race.startsAt || new Date(race.startsAt).getTime() + 15000 < now);
     const isAbandonedActiveRace = race.status === 'active'
