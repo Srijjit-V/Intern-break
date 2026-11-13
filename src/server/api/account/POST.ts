@@ -17,15 +17,18 @@ export default async function handler(req: Request, res: Response) {
     const session = await getSessionUser(req);
     if (!session?.user) return res.status(401).json({ error: 'Sign in required' });
 
-    const { action, roomCode, companyName, displayName, avatarColor, avatarEmoji, role } = req.body ?? {};
+    const { action, roomCode, companyName, displayName, avatarColor, avatarEmoji } = req.body ?? {};
     if (!action || !roomCode) return res.status(400).json({ error: 'action and roomCode are required' });
 
     if (action === 'upsert-membership') {
       if (!displayName || !avatarColor) return res.status(400).json({ error: 'displayName and avatarColor are required' });
-      const safeRole = ['admin', 'coadmin', 'manager', 'employee'].includes(role) ? role : 'employee';
+      // Roles are never taken from the client: first member of an empty room is
+      // admin, later joiners are employees, existing members keep their role.
+      const anyMember = await db.select({ id: companyMembers.id }).from(companyMembers).where(eq(companyMembers.roomCode, roomCode)).limit(1);
+      const safeRole = anyMember[0] ? 'employee' : 'admin';
       const existing = await db.select().from(accountRoomHistory).where(and(eq(accountRoomHistory.accountId, session.user.id), eq(accountRoomHistory.roomCode, roomCode))).limit(1);
       if (existing[0]) {
-        await db.update(accountRoomHistory).set({ displayName, avatarColor, avatarEmoji: avatarEmoji || null, role: safeRole, leftAt: null, lastVisitedAt: new Date() }).where(eq(accountRoomHistory.id, existing[0].id));
+        await db.update(accountRoomHistory).set({ displayName, avatarColor, avatarEmoji: avatarEmoji || null, leftAt: null, lastVisitedAt: new Date() }).where(eq(accountRoomHistory.id, existing[0].id));
       } else {
         await db.insert(accountRoomHistory).values({ accountId: session.user.id, roomCode, displayName, avatarColor, avatarEmoji: avatarEmoji || null, role: safeRole });
       }
@@ -34,7 +37,7 @@ export default async function handler(req: Request, res: Response) {
       if (!room[0]) await db.insert(companyRooms).values({ roomCode, companyName: companyName || 'Intern Break Space' });
       const member = await db.select().from(companyMembers).where(and(eq(companyMembers.roomCode, roomCode), eq(companyMembers.accountId, session.user.id))).limit(1);
       if (member[0]) {
-        await db.update(companyMembers).set({ name: displayName, color: avatarColor, role: safeRole, accountId: session.user.id, updatedAt: new Date() }).where(eq(companyMembers.id, member[0].id));
+        await db.update(companyMembers).set({ name: displayName, color: avatarColor, accountId: session.user.id, updatedAt: new Date() }).where(eq(companyMembers.id, member[0].id));
       } else {
         // Claim a matching legacy row before inserting. This migrates profiles
         // created before authentication was added instead of leaving a second
@@ -42,12 +45,12 @@ export default async function handler(req: Request, res: Response) {
         const legacyMember = await db.select().from(companyMembers).where(and(eq(companyMembers.roomCode, roomCode), eq(companyMembers.name, displayName))).limit(1);
         if (legacyMember[0] && !legacyMember[0].accountId) {
           await db.update(companyMembers)
-            .set({ accountId: session.user.id, name: displayName, color: avatarColor, role: safeRole, updatedAt: new Date() })
+            .set({ accountId: session.user.id, name: displayName, color: avatarColor, updatedAt: new Date() })
             .where(eq(companyMembers.id, legacyMember[0].id));
         } else {
           await db.insert(companyMembers)
             .values({ roomCode, accountId: session.user.id, name: displayName, color: avatarColor, role: safeRole })
-            .onDuplicateKeyUpdate({ set: { name: displayName, color: avatarColor, role: safeRole, updatedAt: new Date() } });
+            .onDuplicateKeyUpdate({ set: { name: displayName, color: avatarColor, updatedAt: new Date() } });
         }
       }
       return res.status(201).json({ ok: true });
