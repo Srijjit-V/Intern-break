@@ -1,4 +1,4 @@
-import express, { type Express, type NextFunction, type Request, type Response } from "express";
+import express, { type NextFunction, type Request, type Response } from "express";
 import { fileURLToPath } from "node:url";
 import { dirname, extname, join } from "node:path";
 import { readFileSync } from "node:fs";
@@ -17,12 +17,6 @@ import races_get_9 from "./api/races/GET";
 import races_post_10 from "./api/races/POST";
 // </api-imports>
 import { seoRoutes } from "../lib/seo-routes";
-import {
-	loadAdSenseRuntimeConfig,
-	resolveAdSenseTextFile,
-	type AdSenseRuntimeConfig,
-} from "./adsense-manifest";
-import { loadIndexNowKey } from "./indexnow-key";
 import { isSystemHost } from "./seo-host";
 import { llmsTxtHandler } from "./llms-txt";
 
@@ -33,55 +27,14 @@ export interface SsrRenderResult {
 	redirect?: string;
 }
 
-export function registerAdSenseTextRoutes(app: Express, config: AdSenseRuntimeConfig): void {
-	app.get("/ads.txt", (_req, res) => {
-		const content = resolveAdSenseTextFile(config, "adsTxt");
-		if (content === null) {
-			res
-				.status(404)
-				.type("text/plain")
-				.set("Cache-Control", "no-cache")
-				.send("Not found\n");
-			return;
-		}
-		res.type("text/plain").set("Cache-Control", "no-cache").send(content);
-	});
-
-	app.get("/app-ads.txt", (_req, res) => {
-		const content = resolveAdSenseTextFile(config, "appAdsTxt");
-		if (content === null) {
-			res
-				.status(404)
-				.type("text/plain")
-				.set("Cache-Control", "no-cache")
-				.send("Not found\n");
-			return;
-		}
-		res.type("text/plain").set("Cache-Control", "no-cache").send(content);
-	});
-}
-
 export function renderSsrDocument(
 	template: string,
 	result: Pick<SsrRenderResult, "head" | "html">,
-	adSenseConfig: Pick<AdSenseRuntimeConfig, "scriptHtml">,
 ): string {
-	const head = [result.head, adSenseConfig.scriptHtml].filter(Boolean).join("\n");
 	return template
-		.replace("<!--app-head-->", () => head)
+		.replace("<!--app-head-->", () => result.head)
 		.replace("<!--app-html-->", () => result.html);
 }
-
-function normalizeCommerceApiBaseUrlEnv() {
-	if (process.env.GODADDY_API_BASE_URL) return;
-	const hostOnly = process.env.VITE_GODADDY_API_HOST;
-	if (!hostOnly) return;
-	const normalizedHost = hostOnly.replace(/^https?:\/\//, "").trim();
-	if (!normalizedHost) return;
-	process.env.GODADDY_API_BASE_URL = `https://${normalizedHost}`;
-}
-
-normalizeCommerceApiBaseUrlEnv();
 
 const app = express();
 
@@ -177,17 +130,6 @@ app.get("/llms.txt", llmsTxtHandler);
 if (import.meta.env.PROD) {
 	const __dirname = dirname(fileURLToPath(import.meta.url));
 	const clientDir = join(__dirname, "client");
-	const adSenseRuntimeConfig = loadAdSenseRuntimeConfig(__dirname);
-	const indexNowKey = loadIndexNowKey(__dirname);
-
-	registerAdSenseTextRoutes(app, adSenseRuntimeConfig);
-
-	if (indexNowKey !== null) {
-		app.get(`/${indexNowKey}.txt`, (_req, res) => {
-			res.type("text/plain").set("Cache-Control", "public, max-age=86400").send(indexNowKey);
-		});
-	}
-
 	app.use(
 		express.static(clientDir, {
 			index: false,
@@ -317,11 +259,7 @@ if (import.meta.env.PROD) {
 			// Function replacements disable String.replace's $-special sequences
 			// ($&, $', $`, $$) so user-authored titles / JSON-LD like
 			// "Save $& today" insert literally instead of being interpolated.
-			const out = renderSsrDocument(
-				template,
-				{ ...result, head: seoHead + result.head },
-				adSenseRuntimeConfig,
-			);
+			const out = renderSsrDocument(template, { ...result, head: seoHead + result.head });
 			res
 				.status(result.status)
 				.set("Content-Type", "text/html; charset=utf-8")
@@ -352,7 +290,6 @@ if (import.meta.env.PROD) {
 		try {
 			const dbClient = "./db/client" + ".js";
 			// Source-literal optional module path; no request, environment, or user input reaches import().
-			// eslint-disable-next-line no-unsanitized/method
 			mod = await import(/* @vite-ignore */ dbClient);
 		} catch (error: unknown) {
 			const code = (error as { code?: string } | null)?.code;

@@ -6,7 +6,7 @@ import tsparser from '@typescript-eslint/parser';
 
 export default [
   {
-    ignores: ['dist', 'node_modules', '.next', '.vite'],
+    ignores: ['dist', 'node_modules', '.next', '.vite', 'drizzle', 'test-results', 'playwright-report'],
   },
   {
     files: ['**/*.{ts,tsx}'],
@@ -62,6 +62,8 @@ export default [
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-empty-function': 'off',
+      // TypeScript already checks undefined names; no-undef only adds false positives on DOM/Node types.
+      'no-undef': 'off',
       'prefer-const': 'error',
       'no-var': 'error',
     },

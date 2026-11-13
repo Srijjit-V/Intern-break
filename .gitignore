@@ -84,3 +84,10 @@ pids
 .airo/qa-runs/
 .airo/qa-report.json
 .airo/security-report.json
+
+# Local export archive (not part of the repo)
+_upload_export.tar.gz
+
+# Playwright / test output
+test-results/
+playwright-report/

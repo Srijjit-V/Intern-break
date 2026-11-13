@@ -1,7 +1,4 @@
-/** TREAT AS IMMUTABLE - This file is protected by the file-edit tool
- *
- * Database connection setup using Drizzle ORM with MySQL2
- */
+/** Database connection setup using Drizzle ORM with MySQL2. */
 
 import { drizzle } from 'drizzle-orm/mysql2';
 import mysql from 'mysql2/promise';
@@ -11,19 +8,26 @@ import * as schema from './schema';
 // Get database configuration
 const dbConfig = getDatabaseCredentials();
 
-// Create MySQL connection pool with SSL enabled
+// Create MySQL connection pool (TLS only when DB_SSL is set)
 const poolConnection = mysql.createPool({
   host: dbConfig.host,
   port: dbConfig.port,
   user: dbConfig.user,
   password: dbConfig.password,
   database: dbConfig.database,
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  ...(dbConfig.ssl ? { ssl: dbConfig.ssl } : {}),
+  // Read and write all timestamps as UTC so age checks (race expiry) do not depend on the Node host's timezone.
+  timezone: 'Z',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
+});
+
+// Make the MySQL session agree with `timezone: 'Z'`, whatever the server's own zone is.
+poolConnection.pool.on('connection', (connection) => {
+  connection.query("SET time_zone = '+00:00'", (error: Error | null) => {
+    if (error) console.error('db.timezone.set-failed', { error: error.message });
+  });
 });
 
 // Create Drizzle instance

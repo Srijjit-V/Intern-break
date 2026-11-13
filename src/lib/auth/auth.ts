@@ -4,12 +4,9 @@
  * Supports both Email/Password and OAuth authentication.
  * Enable/disable methods by uncommenting the relevant sections.
  *
- * Secrets (via getSecret from #airo/secrets):
- * - BETTER_AUTH_SECRET: Session encryption key (auto-generated during install)
- * - OAuth credentials (GOOGLE_CLIENT_ID, etc.) for social login
- *
- * CORS/Trusted Origins:
- * - Only trusts origins matching the server's hostname
+ * Env: BETTER_AUTH_SECRET (required), BETTER_AUTH_URL, BETTER_AUTH_TRUSTED_ORIGINS.
+ * Email/password only; no email verification is required, so local sign up
+ * needs no mail provider.
  */
 
 import { betterAuth } from 'better-auth';
@@ -17,13 +14,11 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 
 import { db } from '@/server/db/client';
 import { user, session, account, verification } from '@/server/db/schema';
-import { getSecret } from '#airo/secrets';
 
 // Lazy singleton — betterAuth() must NOT run at module init time.
 //
-// The BETTER_AUTH_SECRET is loaded from the alloc config at runtime, so the
-// auth instance must be constructed after the secrets are available (i.e. on
-// the first HTTP request, not at import time).
+// The auth instance is built on the first request so a missing
+// BETTER_AUTH_SECRET surfaces as a clear 503 instead of a crash at import.
 //
 // Pattern mirrors how db/client.ts defers the actual MySQL connection — the
 // pool object is safe to create at init, but anything that reads schema state
@@ -33,13 +28,13 @@ let _auth: ReturnType<typeof betterAuth> | null = null;
 export function getAuth() {
   if (_auth) return _auth;
 
-  const authSecret = getSecret('BETTER_AUTH_SECRET');
+  const authSecret = process.env.BETTER_AUTH_SECRET;
   if (!authSecret || typeof authSecret !== 'string') {
-    throw new Error('BETTER_AUTH_SECRET is not set or invalid — run requestSecrets() first');
+    throw new Error('BETTER_AUTH_SECRET is not set or invalid — set it in .env (see .env.example)');
   }
 
   if (!db) {
-    throw new Error('Database not configured. Install the database skill first, then configure auth.');
+    throw new Error('Database not configured.');
   }
 
   const auth = betterAuth({
@@ -50,7 +45,8 @@ export function getAuth() {
     }),
 
     secret: authSecret,
-    baseURL: process.env.BETTER_AUTH_URL || 'https://sprtslp.com',
+    // Public URL of the app. Same origin as the client; see docs/deployment.md.
+    baseURL: process.env.BETTER_AUTH_URL || `http://localhost:${process.env.PORT || '3000'}`,
 
     // Protect admin status field from user input
     user: {
@@ -64,43 +60,25 @@ export function getAuth() {
       },
     },
 
-    // CORS: Trusts .airoapp.ai subdomains and localhost by default.
-    // If your app has a custom domain, add it here or set BETTER_AUTH_TRUSTED_ORIGINS.
+    // Trusted origins: localhost plus BETTER_AUTH_URL and the comma-separated
+    // BETTER_AUTH_TRUSTED_ORIGINS list (full origins, e.g. https://app.example.com).
     trustedOrigins: (request?: Request) => {
-      if (!request) return [];
-
-      const origin = request.headers.get('origin');
-      if (!origin) return [];
-
+      const configured = [process.env.BETTER_AUTH_URL, ...(process.env.BETTER_AUTH_TRUSTED_ORIGINS ?? '').split(',')]
+        .map((o) => o?.trim().replace(/\/$/, ''))
+        .filter((o): o is string => Boolean(o));
+      const origin = request?.headers.get('origin');
+      if (!origin) return configured;
       try {
-        const originUrl = new URL(origin);
-        const hostname = originUrl.hostname;
-
-        // Trust all airoapp.ai subdomains
-        if (hostname.endsWith('.airoapp.ai') || hostname.endsWith('.test-airoapp.ai')) {
-          return [origin];
-        }
-
-        // Trust the custom domain
-        if (hostname === 'sprtslp.com' || hostname.endsWith('.sprtslp.com')) {
-          return [origin];
-        }
-
-        // Trust localhost for development
-        if (hostname === 'localhost' || hostname === '127.0.0.1') {
-          return [origin];
-        }
-
-        return [];
+        const { hostname } = new URL(origin);
+        if (hostname === 'localhost' || hostname === '127.0.0.1') return [...configured, origin];
       } catch {
-        return [];
+        /* ignore malformed origin */
       }
+      return configured;
     },
 
-    // In preview mode the site runs in an iframe embedded by the builder on a different
-    // origin, so cookies need SameSite=None + Secure + Partitioned (CHIPS) for cross-site
-    // access. In publish mode (standalone) we use the safer SameSite=Lax default.
-    ...(process.env.AIRO_PREVIEW === 'true' && {
+    // Cross-site cookies are only needed when embedded in a third-party iframe.
+    ...(process.env.COOKIE_CROSS_SITE === 'true' && {
       advanced: {
         defaultCookieAttributes: {
           sameSite: 'none' as const,
@@ -114,12 +92,12 @@ export function getAuth() {
 
     // socialProviders: {
     //   google: {
-    //     clientId: getSecret('GOOGLE_CLIENT_ID') as string,
-    //     clientSecret: getSecret('GOOGLE_CLIENT_SECRET') as string,
+    //     clientId: process.env.GOOGLE_CLIENT_ID as string,
+    //     clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     //   },
     //   github: {
-    //     clientId: getSecret('GITHUB_CLIENT_ID') as string,
-    //     clientSecret: getSecret('GITHUB_CLIENT_SECRET') as string,
+    //     clientId: process.env.GITHUB_CLIENT_ID as string,
+    //     clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
     //   },
     // },
   });

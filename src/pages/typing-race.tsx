@@ -576,6 +576,13 @@ export default function TypingRacePage() {
         if (!response.ok) return;
         const data = await response.json() as { race: LiveRace | null; participants: LiveParticipant[] };
         if (!active) return;
+        if (!data.race && liveRaceIdRef.current) {
+          // The server closed the race (everyone finished or left). Keep the final standings on screen
+          // instead of wiping every other racer's row; a new race replaces them.
+          setLiveRace((prev) => (prev ? { ...prev, status: 'finished' } : prev));
+          setLiveStatus('Race finished.');
+          return;
+        }
         setLiveRace(data.race);
         setLiveParticipants(data.participants);
         if (data.race && data.race.id !== liveRaceIdRef.current) {
@@ -727,10 +734,12 @@ export default function TypingRacePage() {
           : 'Join Live Race'
         : liveParticipants.find((participant) => participant.accountId === account?.id)?.ready
           ? 'Waiting for racers'
-          : 'Start Race'
+          : 'Ready up'
       : liveRace.status === 'countdown'
         ? 'Countdown started'
-        : 'Race in progress';
+        : liveRace.status === 'finished'
+          ? 'Start Race'
+          : 'Race in progress';
 
   const leaderboardRows = useMemo(() => {
     // Build rows for active participants
@@ -943,7 +952,9 @@ export default function TypingRacePage() {
       setPassage(data.race.passage);
       setLiveRace(data.race);
       setLiveParticipants(data.participants);
-      await readyLiveRace(data.race, true);
+      // Open the lobby only. Auto-readying the creator started the countdown at once with one racer,
+      // so nobody else could ever join. Everyone presses "Ready up" instead.
+      setLiveStatus('Lobby open. Others in your room can join. Press Ready up when everyone is on the grid.');
     } catch (error) {
       setLiveStatus(error instanceof Error ? error.message : 'Unable to start the room race. Please try again.');
     } finally {
@@ -965,7 +976,7 @@ export default function TypingRacePage() {
       }
       const data = await response.json() as { participants: LiveParticipant[] };
       setLiveParticipants(data.participants);
-      setLiveStatus('You are on the grid. Press Start Race when you are ready.');
+      setLiveStatus('You are on the grid. Press Ready up when you are set.');
     } catch (error) {
       setLiveStatus(error instanceof Error ? error.message : 'Unable to join this race.');
     } finally {
@@ -1781,7 +1792,7 @@ export default function TypingRacePage() {
                               : liveRace && !isJoinedLiveRace
                                 ? 'Join the grid before the race begins.'
                                 : liveRace?.status === 'lobby'
-                                  ? 'Press Start Race when you are ready. The countdown begins once every racer is ready.'
+                                  ? 'Press Ready up when you are set. The countdown begins once every racer is ready.'
                                   : 'Wait for the race to begin.'
                       }
                       className="mt-3 w-full rounded-xl border border-white/15 bg-slate-900 px-4 py-3 font-mono text-sm text-white outline-none transition placeholder:text-white/35 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/35 disabled:cursor-not-allowed disabled:opacity-60"
