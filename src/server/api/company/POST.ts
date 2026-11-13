@@ -15,6 +15,12 @@ export default async function handler(req: Request, res: Response) {
     if (!roomCode || !action) return res.status(400).json({ error: 'roomCode and action are required' });
 
     if (action === 'sync-member') {
+      // Roles are never taken from the client: the first member of an empty room
+      // becomes its admin, everyone else joins as employee and keeps whatever
+      // role an admin later gave them (set-role).
+      const anyMember = await db.select({ id: companyMembers.id }).from(companyMembers).where(eq(companyMembers.roomCode, roomCode)).limit(1);
+      const newMemberRole = anyMember[0] ? 'employee' : 'admin';
+
       // Upsert the room itself first. Two concurrent "create room" calls with
       // the same code would both hit the unique(roomCode) constraint here —
       // the second one is simply ignored, so we never end up with orphaned
@@ -26,8 +32,6 @@ export default async function handler(req: Request, res: Response) {
       const localPoints = Math.max(0, Number(points) || 0);
       const localAllTimePoints = Math.max(0, Number(allTimePoints) || 0);
       const localCarryoverPoints = Math.max(0, Number(carryoverPoints) || 0);
-      const roleIsValid = ['admin', 'coadmin', 'manager', 'employee'].includes(role);
-      const safeRole = roleIsValid ? role : 'employee';
 
       // Atomic upsert keyed on the (roomCode, accountId) unique constraint.
       // This is the fix for the "joining creates two profiles" bug: the old
@@ -52,7 +56,6 @@ export default async function handler(req: Request, res: Response) {
           accountId: session.user.id,
           name: memberName || legacyMember.name,
           color: color || legacyMember.color,
-          role: roleIsValid ? safeRole : legacyMember.role,
           points: Math.max(legacyMember.points, localPoints),
           allTimePoints: Math.max(legacyMember.allTimePoints, localAllTimePoints),
           carryoverPoints: Math.max(legacyMember.carryoverPoints, localCarryoverPoints),
@@ -68,7 +71,7 @@ export default async function handler(req: Request, res: Response) {
             accountId: session.user.id,
             name: memberName,
             color: color || '#1BDBDB',
-            role: safeRole,
+            role: newMemberRole,
             points: localPoints,
             allTimePoints: localAllTimePoints,
             carryoverPoints: localCarryoverPoints,
@@ -78,7 +81,6 @@ export default async function handler(req: Request, res: Response) {
             set: {
               name: memberName || sql`${companyMembers.name}`,
               color: color || sql`${companyMembers.color}`,
-              role: roleIsValid ? safeRole : sql`${companyMembers.role}`,
               points: sql`GREATEST(${companyMembers.points}, ${localPoints})`,
               allTimePoints: sql`GREATEST(${companyMembers.allTimePoints}, ${localAllTimePoints})`,
               carryoverPoints: sql`GREATEST(${companyMembers.carryoverPoints}, ${localCarryoverPoints})`,
@@ -118,10 +120,12 @@ export default async function handler(req: Request, res: Response) {
         ? memberByAccount
         : await db.select().from(companyMembers).where(and(eq(companyMembers.roomCode, roomCode), eq(companyMembers.name, memberName))).orderBy(desc(companyMembers.updatedAt)).limit(1);
       if (!member[0]) return res.status(404).json({ error: 'Member not found' });
+      const cost = Number(points);
+      if (!Number.isInteger(cost) || cost <= 0) return res.status(400).json({ error: 'points must be a positive integer' });
       const available = member[0].carryoverPoints;
-      if (available < Number(points)) return res.status(400).json({ error: 'Not enough points' });
-      await db.update(companyMembers).set({ carryoverPoints: available - Number(points) }).where(eq(companyMembers.id, member[0].id));
-      const result = await db.insert(rewardRedemptions).values({ roomCode, memberName: member[0].name, rewardName, points: Number(points) });
+      if (available < cost) return res.status(400).json({ error: 'Not enough points' });
+      await db.update(companyMembers).set({ carryoverPoints: available - cost }).where(eq(companyMembers.id, member[0].id));
+      const result = await db.insert(rewardRedemptions).values({ roomCode, memberName: member[0].name, rewardName, points: cost });
       return res.status(201).json({ ok: true, redemptionId: Number(result[0].insertId) });
     }
 
