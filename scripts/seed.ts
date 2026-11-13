@@ -8,7 +8,7 @@ import { getAuth } from '../src/lib/auth/auth';
 import { closeConnection, db } from '../src/server/db/client';
 import { accountRoomHistory, companyMembers, companyRooms, user } from '../src/server/db/schema';
 
-const ROOM = 'DEMO';
+const ROOM = 'DEMO01'; // room codes are exactly 6 characters
 const PASSWORD = process.env.SEED_PASSWORD || 'demo-password-123';
 const people = [
   { email: 'admin@example.test', name: 'Ada Admin', role: 'admin', color: '#F59E0B', points: 420 },

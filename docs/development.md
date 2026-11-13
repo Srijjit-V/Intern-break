@@ -7,7 +7,7 @@ cp .env.example .env              # set BETTER_AUTH_SECRET
 docker compose up -d db           # MySQL; the db service is not published, see below
 npm ci
 npm run db:migrate
-npm run db:seed                   # room DEMO, admin@example.test, fake members
+npm run db:seed                   # room DEMO01, admin@example.test, fake members
 npm run dev                       # http://localhost:5173 (API in the same process)
 ```
 
