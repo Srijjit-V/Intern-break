@@ -17,6 +17,7 @@ Found while making the app run outside Airo and testing it. Each has a test.
 | 11 | Nobody else could join a typing race | User A opens the page and presses Start Race; user B never sees a joinable lobby | Start Race only opens the lobby; everyone presses Ready up, the countdown starts when all are ready | `cross-play.spec.ts` |
 | 12 | Race results showed only the local player | Two users finish a race; each results screen lists one racer | Client keeps the final standings when the server closes the race | `cross-play.spec.ts` |
 | 13 | Spinner forever when the API is unreachable | Block `/api/**` and open any page | `ProtectedRoute` shows a "Can't reach the server" panel with Retry | `edge.spec.ts` |
+| 14 | Race and lobby age checks depended on the Node host's timezone | Run Node in a non-UTC zone against a UTC MySQL: a new lobby looks hours old | Pool uses UTC (`timezone: 'Z'`) and sets the MySQL session to `+00:00` | `cross-play.spec.ts` (failed before the fix on this Mac) |
 
 ## Known and not fixed
 

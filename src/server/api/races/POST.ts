@@ -37,9 +37,16 @@ export default async function handler(req: Request, res: Response) {
         .limit(1);
       const existingRace = openRaces[0];
 
-      const lobbyIsStale = existingRace?.status === 'lobby' && new Date(existingRace.updatedAt).getTime() + 600000 < Date.now();
-      if (lobbyIsStale) {
-        await db.update(typingRaces).set({ status: 'finished', updatedAt: new Date() }).where(eq(typingRaces.id, existingRace.id));
+      // A lobby is stale only after 10 minutes with no activity from the race or any participant.
+      let lobbyIsStale = false;
+      if (existingRace?.status === 'lobby') {
+        const lobbyRows = await db.select().from(typingRaceParticipants).where(eq(typingRaceParticipants.raceId, existingRace.id));
+        const lastActivity = Math.max(new Date(existingRace.updatedAt).getTime(), ...lobbyRows.map((p) => new Date(p.updatedAt).getTime()));
+        lobbyIsStale = lastActivity + 600000 < Date.now();
+        if (lobbyIsStale) {
+          await db.update(typingRaces).set({ status: 'finished', updatedAt: new Date() })
+            .where(and(eq(typingRaces.id, existingRace.id), eq(typingRaces.status, 'lobby')));
+        }
       }
 
       if (existingRace?.status === 'lobby' && !lobbyIsStale) {

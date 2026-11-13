@@ -30,13 +30,16 @@ export default async function handler(req: Request, res: Response) {
     const now = Date.now();
     const isExpiredCountdown = race.status === 'countdown' && (!race.startsAt || new Date(race.startsAt).getTime() + 15000 < now);
     // A lobby nobody readied up in 10 minutes is abandoned, so it cannot block the room.
-    const isAbandonedLobby = race.status === 'lobby' && new Date(race.updatedAt).getTime() + 600000 < now;
+    // Activity is the newest of the race row and any participant row (joins and ready-ups bump those).
+    const lastActivity = Math.max(new Date(race.updatedAt).getTime(), ...participants.map((p) => new Date(p.updatedAt).getTime()));
+    const isAbandonedLobby = race.status === 'lobby' && lastActivity + 600000 < now;
     const isAbandonedActiveRace = race.status === 'active'
       && participants.length <= 1
       && new Date(race.updatedAt).getTime() + 120000 < now;
 
     if (isExpiredCountdown || isAbandonedActiveRace || isAbandonedLobby) {
-      await db.update(typingRaces).set({ status: 'finished', updatedAt: new Date() }).where(eq(typingRaces.id, race.id));
+      // Only close the status we observed, so a concurrent ready-up is not clobbered.
+      await db.update(typingRaces).set({ status: 'finished', updatedAt: new Date() }).where(and(eq(typingRaces.id, race.id), eq(typingRaces.status, race.status)));
       return res.json({ race: null, participants: [] });
     }
 

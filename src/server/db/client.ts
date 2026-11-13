@@ -16,9 +16,16 @@ const poolConnection = mysql.createPool({
   password: dbConfig.password,
   database: dbConfig.database,
   ...(dbConfig.ssl ? { ssl: dbConfig.ssl } : {}),
+  // Read and write all timestamps as UTC so age checks (race expiry) do not depend on the Node host's timezone.
+  timezone: 'Z',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
+});
+
+// Make the MySQL session agree with `timezone: 'Z'`, whatever the server's own zone is.
+poolConnection.pool.on('connection', (connection) => {
+  connection.query("SET time_zone = '+00:00'");
 });
 
 // Create Drizzle instance
