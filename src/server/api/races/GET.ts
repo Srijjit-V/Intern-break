@@ -32,7 +32,7 @@ export default async function handler(req: Request, res: Response) {
     // A lobby nobody readied up in 10 minutes is abandoned, so it cannot block the room.
     // Activity is the newest of the race row and any participant row (joins and ready-ups bump those).
     const lastActivity = Math.max(new Date(race.updatedAt).getTime(), ...participants.map((p) => new Date(p.updatedAt).getTime()));
-    const isAbandonedLobby = race.status === 'lobby' && lastActivity + 600000 < now;
+    const isAbandonedLobby = race.status === 'lobby' && (lastActivity + 600000 < now || new Date(race.createdAt).getTime() + 1800000 < now);
     const isAbandonedActiveRace = race.status === 'active'
       && participants.length <= 1
       && new Date(race.updatedAt).getTime() + 120000 < now;

@@ -39,3 +39,7 @@ Then in the service's Variables set:
 Keep the whole app on one origin: better-auth uses `window.location.origin` and cookie sessions, so do not put the API on a different domain. After deploy, sign up, create a room, and run a two-user race from two browsers to verify.
 
 Other hosts work if they run a Node 22 container, a MySQL 8 database, and set the same variables. Set `DB_SSL=true` for managed databases that require TLS.
+
+## Timestamps are UTC
+
+The database connection reads and writes all timestamps as UTC (`timezone: 'Z'`, session `time_zone = '+00:00'`). A fresh database needs nothing. If you point the app at a database that an older build wrote from a non-UTC Node host, convert its `TIMESTAMP`/`DATETIME` values first (for example `CONVERT_TZ(col, '<old zone>', '+00:00')`) or expect sessions and race ages to be off by the zone difference. Signing everyone out (`DELETE FROM session`) is the simple safe reset.
