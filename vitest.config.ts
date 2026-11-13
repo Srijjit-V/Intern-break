@@ -12,6 +12,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
+    exclude: ['node_modules/**', 'dist/**', 'tests/e2e/**'],
     // Importing the server entry builds a MySQL pool (lazy, never connects in unit tests).
     env: { DB_HOST: 'localhost', DB_USER: 'test', DB_PASS: 'test', DB_NAME: 'test', BETTER_AUTH_SECRET: 'test-secret-test-secret-test-secret' },
     setupFiles: './src/test/setup.ts',
