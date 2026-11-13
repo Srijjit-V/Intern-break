@@ -11,7 +11,7 @@ import { URL } from "node:url";
 
 
 import { formatOverridesPlugin } from "./export-plugins/format-overrides-plugin.ts";
-import { contentPlugin } from "./export-plugins/content-plugin/index.ts";import { mediaAssetsPlugin } from "./export-plugins/media-assets-plugin.ts";
+import { contentPlugin } from "./export-plugins/content-plugin/index.ts";
 
 function extractHostname(value: string): string {
   try {
@@ -166,6 +166,8 @@ if (corsOrigins.length === 0) {
 }
 
 export default defineConfig(({ isSsrBuild }) => ({
+  // Sub-path hosting (GitHub Pages): VITE_BASE_PATH=/Intern-break/
+  base: process.env.VITE_BASE_PATH || "/",
   envPrefix: ["VITE_", "SITE_"],
 
   plugins: [
@@ -175,7 +177,7 @@ export default defineConfig(({ isSsrBuild }) => ({
     }
   }),
   worktreePreviewPlugin(),
-  apiDevPlugin(), mediaAssetsPlugin(),
+  apiDevPlugin(),
   formatOverridesPlugin(__dirname),
   contentPlugin()],
 

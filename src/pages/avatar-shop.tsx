@@ -1,6 +1,7 @@
 import { avatar_shop } from 'virtual:content';
 import { useMemo, useState } from 'react';
 import { Helmet } from '@dr.pogodin/react-helmet';
+import { Link } from 'react-router';
 import { Coins, Check, Lock, Sparkles } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import BeanAvatar from '@/components/BeanAvatar';
@@ -137,9 +138,9 @@ export default function AvatarShopPage() {
             <BeanAvatar loadout={loadout} size={180} dancing />
             <p className="mt-4 text-sm font-bold text-foreground">{user.name}</p>
             <p className="text-xs text-muted-foreground"><span>{avatar_shop.previewLabel}</span></p>
-            <a href="/rewards" className="mt-4 text-xs font-semibold text-yellow-500 hover:underline">
+            <Link to="/rewards" className="mt-4 text-xs font-semibold text-yellow-500 hover:underline">
               <span>{avatar_shop.rewardsLink}</span>
-            </a>
+            </Link>
           </section>
 
           {/* Item grid */}
