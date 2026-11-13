@@ -39,7 +39,7 @@ Every action requires membership of `roomCode`, otherwise `403 {"error":"You are
 
 | Method | Path | Request | Response |
 | --- | --- | --- | --- |
-| GET | `/api/races?roomCode=` | none | `{race, participants}` for the newest lobby, countdown or active race, else `{race:null, participants:[]}`. Also advances state: countdown to active when `startsAt` passes, finished when all racers finish, and closes stale races (a lobby idle for 10 min, a countdown older than 15 s past start, or a lone active racer idle for 120 s). |
+| GET | `/api/races?roomCode=` | none | `{race, participants}` for the newest lobby, countdown or active race, else `{race:null, participants:[]}`. Also advances state: countdown to active when `startsAt` passes, finished when all racers finish, and closes stale races (a lobby idle 10 min or open over 30 min and quiet for 2, or over 45 min; a countdown older than 15 s past start, or a lone active racer idle for 120 s). |
 | POST | `/api/races` | `{action:"start", roomCode, passage, displayName, color}` | `201` new lobby, or the existing lobby with you added. `409` if full (5) or a race is underway. |
 | POST | `/api/races` | `{action:"join", roomCode, raceId, displayName, color}` | `{ok, participants}`; `409` if started or full |
 | POST | `/api/races` | `{action:"ready", roomCode, raceId}` | When everyone is ready the race moves to `countdown` with `startsAt` 3 s ahead |
