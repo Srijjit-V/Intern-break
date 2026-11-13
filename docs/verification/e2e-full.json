@@ -2,14 +2,14 @@
   "config": {
     "argv": [
       "/usr/local/bin/node",
-      "./node_modules/.bin/playwright",
+      "/Users/srijjit/Desktop/Intern_Break_Space/node_modules/.bin/playwright",
       "test",
       "--project=full",
       "--reporter=json",
       "--timeout=120000"
     ],
-    "configFile": "./playwright.config.ts",
-    "rootDir": ".",
+    "configFile": "/Users/srijjit/Desktop/Intern_Break_Space/playwright.config.ts",
+    "rootDir": "/Users/srijjit/Desktop/Intern_Break_Space",
     "failOnFlakyTests": false,
     "forbidOnly": false,
     "fullyParallel": false,
@@ -25,7 +25,7 @@
     "preserveOutput": "always",
     "projects": [
       {
-        "outputDir": "./test-results",
+        "outputDir": "/Users/srijjit/Desktop/Intern_Break_Space/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
@@ -33,7 +33,7 @@
         },
         "id": "full",
         "name": "full",
-        "testDir": "./tests/e2e/full",
+        "testDir": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full",
         "testIgnore": [],
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
@@ -41,7 +41,7 @@
         "timeout": 120000
       },
       {
-        "outputDir": "./test-results",
+        "outputDir": "/Users/srijjit/Desktop/Intern_Break_Space/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
@@ -49,7 +49,7 @@
         },
         "id": "demo",
         "name": "demo",
-        "testDir": "./tests/e2e/demo",
+        "testDir": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/demo",
         "testIgnore": [],
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
@@ -61,15 +61,15 @@
       {
         "grep": {},
         "grepInvert": null,
-        "outputDir": "./test-results",
+        "outputDir": "/Users/srijjit/Desktop/Intern_Break_Space/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
           "actualWorkers": 1
         },
         "name": "full",
-        "testDir": "./tests/e2e/full",
-        "snapshotDir": "./tests/e2e/full",
+        "testDir": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full",
+        "snapshotDir": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full",
         "testIgnore": [],
         "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
         "timeout": 120000,
@@ -137,12 +137,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 4264,
+                  "duration": 4143,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-13T07:00:50.692Z",
+                  "startTime": "2026-11-13T07:36:03.789Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -157,7 +157,7 @@
         },
         {
           "title": "wrong password is rejected",
-          "ok": true,
+          "ok": false,
           "tags": [],
           "tests": [
             {
@@ -170,18 +170,50 @@
                 {
                   "workerIndex": 0,
                   "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 2717,
-                  "errors": [],
+                  "status": "timedOut",
+                  "duration": 314135,
+                  "error": {
+                    "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m",
+                    "stack": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
+                  },
+                  "errors": [
+                    {
+                      "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
+                    },
+                    {
+                      "location": {
+                        "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                        "column": 45,
+                        "line": 27
+                      },
+                      "message": "Error: locator.click: Test timeout of 120000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button[type=submit]')\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"submit\" class=\"landing-quests-button flex h-12 w-full items-center justify-center rounded-full px-6 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-60\">Create account</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not stable\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not stable\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is not stable\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\n\n   at tests/e2e/full/helpers.ts:27\n\n  25 |   await page.locator('input[type=email]').fill(email);\n  26 |   await page.locator('input[type=password]').fill(PASSWORD);\n> 27 |   await page.locator('button[type=submit]').click();\n     |                                             ^\n  28 |   await page.waitForURL(/\\/(profile|room|challenges)/);\n  29 |   return email;\n  30 | }\n    at signUp (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:27:45)\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/auth.spec.ts:21:3"
+                    }
+                  ],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-13T07:00:55.376Z",
+                  "startTime": "2026-11-13T07:36:09.007Z",
                   "annotations": [],
-                  "attachments": []
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/auth-wrong-password-is-rejected-full/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/auth-wrong-password-is-rejected-full/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/auth-wrong-password-is-rejected-full/trace.zip"
+                    }
+                  ]
                 }
               ],
-              "status": "expected"
+              "status": "unexpected"
             }
           ],
           "id": "d748ac400d08b85935ef-32951343ebb4a7ecac50",
@@ -191,7 +223,7 @@
         },
         {
           "title": "duplicate sign up shows an error",
-          "ok": true,
+          "ok": false,
           "tags": [],
           "tests": [
             {
@@ -202,20 +234,53 @@
               "projectName": "full",
               "results": [
                 {
-                  "workerIndex": 0,
+                  "workerIndex": 1,
                   "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 3432,
-                  "errors": [],
+                  "status": "timedOut",
+                  "duration": 120199,
+                  "error": {
+                    "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m",
+                    "stack": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
+                  },
+                  "errors": [
+                    {
+                      "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
+                    },
+                    {
+                      "message": "Error: apiRequestContext._wrapApiCall: ENOENT: no such file or directory, copyfile '/Users/srijjit/Desktop/Intern_Break_Space/test-results/.playwright-artifacts-1/traces/d748ac400d08b85935ef-f75995c68d993a665eae-recording1.network' -> '/Users/srijjit/Desktop/Intern_Break_Space/test-results/.playwright-artifacts-1/traces/d748ac400d08b85935ef-f75995c68d993a665eae-recording1-pwnetcopy-1.network'"
+                    },
+                    {
+                      "message": "Error: browserContext._wrapApiCall: ENOENT: no such file or directory, copyfile '/Users/srijjit/Desktop/Intern_Break_Space/test-results/.playwright-artifacts-1/traces/d748ac400d08b85935ef-f75995c68d993a665eae.network' -> '/Users/srijjit/Desktop/Intern_Break_Space/test-results/.playwright-artifacts-1/traces/d748ac400d08b85935ef-f75995c68d993a665eae-pwnetcopy-1.network'"
+                    },
+                    {
+                      "location": {
+                        "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                        "column": 14,
+                        "line": 28
+                      },
+                      "message": "Error: page.waitForURL: Test timeout of 120000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n\n   at tests/e2e/full/helpers.ts:28\n\n  26 |   await page.locator('input[type=password]').fill(PASSWORD);\n  27 |   await page.locator('button[type=submit]').click();\n> 28 |   await page.waitForURL(/\\/(profile|room|challenges)/);\n     |              ^\n  29 |   return email;\n  30 | }\n  31 |\n    at signUp (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:28:14)\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/auth.spec.ts:29:17"
+                    }
+                  ],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-13T07:00:58.098Z",
+                  "startTime": "2026-11-13T07:41:24.433Z",
                   "annotations": [],
-                  "attachments": []
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/auth-duplicate-sign-up-shows-an-error-full/test-failed-1.png"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/auth-duplicate-sign-up-shows-an-error-full/trace.zip"
+                    }
+                  ]
                 }
               ],
-              "status": "expected"
+              "status": "unexpected"
             }
           ],
           "id": "d748ac400d08b85935ef-f75995c68d993a665eae",
@@ -225,7 +290,7 @@
         },
         {
           "title": "logged-out visit to a protected page redirects to login",
-          "ok": true,
+          "ok": false,
           "tags": [],
           "tests": [
             {
@@ -236,20 +301,60 @@
               "projectName": "full",
               "results": [
                 {
-                  "workerIndex": 0,
+                  "workerIndex": 2,
                   "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 3479,
-                  "errors": [],
+                  "status": "failed",
+                  "duration": 333,
+                  "error": {
+                    "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/challenges\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/challenges\", waiting until \"load\"\u001b[22m\n",
+                    "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/challenges\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/challenges\", waiting until \"load\"\u001b[22m\n\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/auth.spec.ts:45:16",
+                    "location": {
+                      "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/auth.spec.ts",
+                      "column": 16,
+                      "line": 45
+                    },
+                    "snippet": "  43 | test('logged-out visit to a protected page redirects to login', async ({ page }) => {\n  44 |   for (const path of ['challenges', 'leaderboard', 'admin', 'typing-race']) {\n> 45 |     await page.goto(path);\n     |                ^\n  46 |     await expect(page).toHaveURL(/login/);\n  47 |   }\n  48 | });"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/auth.spec.ts",
+                        "column": 16,
+                        "line": 45
+                      },
+                      "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/challenges\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/challenges\", waiting until \"load\"\u001b[22m\n\n\n  43 | test('logged-out visit to a protected page redirects to login', async ({ page }) => {\n  44 |   for (const path of ['challenges', 'leaderboard', 'admin', 'typing-race']) {\n> 45 |     await page.goto(path);\n     |                ^\n  46 |     await expect(page).toHaveURL(/login/);\n  47 |   }\n  48 | });\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/auth.spec.ts:45:16"
+                    }
+                  ],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-13T07:01:01.535Z",
+                  "startTime": "2026-11-13T07:43:25.843Z",
                   "annotations": [],
-                  "attachments": []
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/auth-logged-out-visit-to-a-protected-page-redirects-to-login-full/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/auth-logged-out-visit-to-a-protected-page-redirects-to-login-full/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/auth-logged-out-visit-to-a-protected-page-redirects-to-login-full/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/auth.spec.ts",
+                    "column": 16,
+                    "line": 45
+                  }
                 }
               ],
-              "status": "expected"
+              "status": "unexpected"
             }
           ],
           "id": "d748ac400d08b85935ef-4040cf61ab333ace9641",
@@ -274,7 +379,7 @@
           "specs": [
             {
               "title": "both appear in the room, roles are enforced, and a wrong code is rejected",
-              "ok": true,
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -285,20 +390,60 @@
                   "projectName": "full",
                   "results": [
                     {
-                      "workerIndex": 0,
+                      "workerIndex": 3,
                       "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 13334,
-                      "errors": [],
+                      "status": "failed",
+                      "duration": 115,
+                      "error": {
+                        "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n\n    at signUp (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:22:14)\n    at newUser (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:66:23)\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/cross-play.spec.ts:13:15",
+                        "location": {
+                          "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                          "column": 14,
+                          "line": 22
+                        },
+                        "snippet": "   at tests/e2e/full/helpers.ts:22\n\n  20 |\n  21 | export async function signUp(page: Page, name: string, email = uniqueEmail('user')) {\n> 22 |   await page.goto('signup');\n     |              ^\n  23 |   await declineCookies(page);\n  24 |   await page.locator('input[type=text]').first().fill(name);\n  25 |   await page.locator('input[type=email]').fill(email);"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                            "column": 14,
+                            "line": 22
+                          },
+                          "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n\n\n   at tests/e2e/full/helpers.ts:22\n\n  20 |\n  21 | export async function signUp(page: Page, name: string, email = uniqueEmail('user')) {\n> 22 |   await page.goto('signup');\n     |              ^\n  23 |   await declineCookies(page);\n  24 |   await page.locator('input[type=text]').first().fill(name);\n  25 |   await page.locator('input[type=email]').fill(email);\n    at signUp (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:22:14)\n    at newUser (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:66:23)\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/cross-play.spec.ts:13:15"
+                        }
+                      ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-11-13T07:01:05.032Z",
+                      "startTime": "2026-11-13T07:43:26.811Z",
                       "annotations": [],
-                      "attachments": []
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/cross-play-two-users-in-on-7b95f-nd-a-wrong-code-is-rejected-full/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/cross-play-two-users-in-on-7b95f-nd-a-wrong-code-is-rejected-full/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/cross-play-two-users-in-on-7b95f-nd-a-wrong-code-is-rejected-full/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                        "column": 14,
+                        "line": 22
+                      }
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
               "id": "393f9037c0b8974031ac-4e62a426054b882e9508",
@@ -308,7 +453,7 @@
             },
             {
               "title": "typing race: lobby, countdown, live progress, finish order, isolation",
-              "ok": true,
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -319,20 +464,60 @@
                   "projectName": "full",
                   "results": [
                     {
-                      "workerIndex": 0,
+                      "workerIndex": 4,
                       "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 26659,
-                      "errors": [],
+                      "status": "failed",
+                      "duration": 127,
+                      "error": {
+                        "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n\n    at signUp (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:22:14)\n    at newUser (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:66:23)\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/cross-play.spec.ts:39:15",
+                        "location": {
+                          "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                          "column": 14,
+                          "line": 22
+                        },
+                        "snippet": "   at tests/e2e/full/helpers.ts:22\n\n  20 |\n  21 | export async function signUp(page: Page, name: string, email = uniqueEmail('user')) {\n> 22 |   await page.goto('signup');\n     |              ^\n  23 |   await declineCookies(page);\n  24 |   await page.locator('input[type=text]').first().fill(name);\n  25 |   await page.locator('input[type=email]').fill(email);"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                            "column": 14,
+                            "line": 22
+                          },
+                          "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n\n\n   at tests/e2e/full/helpers.ts:22\n\n  20 |\n  21 | export async function signUp(page: Page, name: string, email = uniqueEmail('user')) {\n> 22 |   await page.goto('signup');\n     |              ^\n  23 |   await declineCookies(page);\n  24 |   await page.locator('input[type=text]').first().fill(name);\n  25 |   await page.locator('input[type=email]').fill(email);\n    at signUp (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:22:14)\n    at newUser (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:66:23)\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/cross-play.spec.ts:39:15"
+                        }
+                      ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-11-13T07:01:18.372Z",
+                      "startTime": "2026-11-13T07:43:27.310Z",
                       "annotations": [],
-                      "attachments": []
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/cross-play-two-users-in-on-c0c7c-ress-finish-order-isolation-full/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/cross-play-two-users-in-on-c0c7c-ress-finish-order-isolation-full/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/cross-play-two-users-in-on-c0c7c-ress-finish-order-isolation-full/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                        "column": 14,
+                        "line": 22
+                      }
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
               "id": "393f9037c0b8974031ac-4d9e852383e652f84c8d",
@@ -342,7 +527,7 @@
             },
             {
               "title": "a player who leaves mid-race is marked DNF and the race can end",
-              "ok": true,
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -353,20 +538,60 @@
                   "projectName": "full",
                   "results": [
                     {
-                      "workerIndex": 0,
+                      "workerIndex": 5,
                       "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 5292,
-                      "errors": [],
+                      "status": "failed",
+                      "duration": 114,
+                      "error": {
+                        "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n\n    at signUp (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:22:14)\n    at newUser (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:66:23)\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/cross-play.spec.ts:101:15",
+                        "location": {
+                          "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                          "column": 14,
+                          "line": 22
+                        },
+                        "snippet": "   at tests/e2e/full/helpers.ts:22\n\n  20 |\n  21 | export async function signUp(page: Page, name: string, email = uniqueEmail('user')) {\n> 22 |   await page.goto('signup');\n     |              ^\n  23 |   await declineCookies(page);\n  24 |   await page.locator('input[type=text]').first().fill(name);\n  25 |   await page.locator('input[type=email]').fill(email);"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                            "column": 14,
+                            "line": 22
+                          },
+                          "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n\n\n   at tests/e2e/full/helpers.ts:22\n\n  20 |\n  21 | export async function signUp(page: Page, name: string, email = uniqueEmail('user')) {\n> 22 |   await page.goto('signup');\n     |              ^\n  23 |   await declineCookies(page);\n  24 |   await page.locator('input[type=text]').first().fill(name);\n  25 |   await page.locator('input[type=email]').fill(email);\n    at signUp (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:22:14)\n    at newUser (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:66:23)\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/cross-play.spec.ts:101:15"
+                        }
+                      ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-11-13T07:01:45.038Z",
+                      "startTime": "2026-11-13T07:43:27.807Z",
                       "annotations": [],
-                      "attachments": []
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/cross-play-two-users-in-on-7792d-ed-DNF-and-the-race-can-end-full/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/cross-play-two-users-in-on-7792d-ed-DNF-and-the-race-can-end-full/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/cross-play-two-users-in-on-7792d-ed-DNF-and-the-race-can-end-full/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                        "column": 14,
+                        "line": 22
+                      }
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
               "id": "393f9037c0b8974031ac-b871ca85ae190e6b50b8",
@@ -386,7 +611,7 @@
       "specs": [
         {
           "title": "phone-size viewport renders the room page without horizontal scroll",
-          "ok": true,
+          "ok": false,
           "tags": [],
           "tests": [
             {
@@ -397,20 +622,60 @@
               "projectName": "full",
               "results": [
                 {
-                  "workerIndex": 0,
+                  "workerIndex": 6,
                   "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 350,
-                  "errors": [],
+                  "status": "failed",
+                  "duration": 101,
+                  "error": {
+                    "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/login\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/login\", waiting until \"load\"\u001b[22m\n",
+                    "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/login\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/login\", waiting until \"load\"\u001b[22m\n\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/edge.spec.ts:7:14",
+                    "location": {
+                      "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/edge.spec.ts",
+                      "column": 14,
+                      "line": 7
+                    },
+                    "snippet": "   5 |   const ctx = await browser.newContext({ viewport: { width: 375, height: 812 } });\n   6 |   const page = await ctx.newPage();\n>  7 |   await page.goto('login');\n     |              ^\n   8 |   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);\n   9 |   expect(overflow).toBeLessThanOrEqual(1);\n  10 |   await ctx.close();"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/edge.spec.ts",
+                        "column": 14,
+                        "line": 7
+                      },
+                      "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/login\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/login\", waiting until \"load\"\u001b[22m\n\n\n   5 |   const ctx = await browser.newContext({ viewport: { width: 375, height: 812 } });\n   6 |   const page = await ctx.newPage();\n>  7 |   await page.goto('login');\n     |              ^\n   8 |   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);\n   9 |   expect(overflow).toBeLessThanOrEqual(1);\n  10 |   await ctx.close();\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/edge.spec.ts:7:14"
+                    }
+                  ],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-13T07:01:50.357Z",
+                  "startTime": "2026-11-13T07:43:28.309Z",
                   "annotations": [],
-                  "attachments": []
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/edge-phone-size-viewport-r-9af01-e-without-horizontal-scroll-full/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/edge-phone-size-viewport-r-9af01-e-without-horizontal-scroll-full/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/edge-phone-size-viewport-r-9af01-e-without-horizontal-scroll-full/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/edge.spec.ts",
+                    "column": 14,
+                    "line": 7
+                  }
                 }
               ],
-              "status": "expected"
+              "status": "unexpected"
             }
           ],
           "id": "4ad4bbb8656548b3a3f1-ba959aa95811982e16e9",
@@ -420,7 +685,7 @@
         },
         {
           "title": "server down: the UI shows an error state, not a blank page",
-          "ok": true,
+          "ok": false,
           "tags": [],
           "tests": [
             {
@@ -431,20 +696,60 @@
               "projectName": "full",
               "results": [
                 {
-                  "workerIndex": 0,
+                  "workerIndex": 7,
                   "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 5430,
-                  "errors": [],
+                  "status": "failed",
+                  "duration": 113,
+                  "error": {
+                    "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n",
+                    "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n\n    at signUp (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:22:14)\n    at newUser (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:66:23)\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/edge.spec.ts:14:25",
+                    "location": {
+                      "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                      "column": 14,
+                      "line": 22
+                    },
+                    "snippet": "   at tests/e2e/full/helpers.ts:22\n\n  20 |\n  21 | export async function signUp(page: Page, name: string, email = uniqueEmail('user')) {\n> 22 |   await page.goto('signup');\n     |              ^\n  23 |   await declineCookies(page);\n  24 |   await page.locator('input[type=text]').first().fill(name);\n  25 |   await page.locator('input[type=email]').fill(email);"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                        "column": 14,
+                        "line": 22
+                      },
+                      "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n\n\n   at tests/e2e/full/helpers.ts:22\n\n  20 |\n  21 | export async function signUp(page: Page, name: string, email = uniqueEmail('user')) {\n> 22 |   await page.goto('signup');\n     |              ^\n  23 |   await declineCookies(page);\n  24 |   await page.locator('input[type=text]').first().fill(name);\n  25 |   await page.locator('input[type=email]').fill(email);\n    at signUp (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:22:14)\n    at newUser (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:66:23)\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/edge.spec.ts:14:25"
+                    }
+                  ],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-13T07:01:50.712Z",
+                  "startTime": "2026-11-13T07:43:28.766Z",
                   "annotations": [],
-                  "attachments": []
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/edge-server-down-the-UI-sh-4909f-rror-state-not-a-blank-page-full/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/edge-server-down-the-UI-sh-4909f-rror-state-not-a-blank-page-full/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/edge-server-down-the-UI-sh-4909f-rror-state-not-a-blank-page-full/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                    "column": 14,
+                    "line": 22
+                  }
                 }
               ],
-              "status": "expected"
+              "status": "unexpected"
             }
           ],
           "id": "4ad4bbb8656548b3a3f1-ff6dafb7730e2f8a5028",
@@ -454,7 +759,7 @@
         },
         {
           "title": "API rejects unauthenticated calls and ignores client-supplied admin role",
-          "ok": true,
+          "ok": false,
           "tags": [],
           "tests": [
             {
@@ -465,20 +770,54 @@
               "projectName": "full",
               "results": [
                 {
-                  "workerIndex": 0,
+                  "workerIndex": 8,
                   "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 6512,
-                  "errors": [],
+                  "status": "failed",
+                  "duration": 27,
+                  "error": {
+                    "message": "AggregateError: apiRequestContext.get: connect ECONNREFUSED ::1:3000\nconnect ECONNREFUSED 127.0.0.1:3000\nCall log:\n\u001b[2m  - → GET http://localhost:3000/api/company?roomCode=XXXXXX\u001b[22m\n\u001b[2m    - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.8127.18 Safari/537.36\u001b[22m\n\u001b[2m    - accept: */*\u001b[22m\n\u001b[2m    - accept-encoding: gzip,deflate,br\u001b[22m\n",
+                    "stack": "AggregateError: apiRequestContext.get: connect ECONNREFUSED ::1:3000\nconnect ECONNREFUSED 127.0.0.1:3000\nCall log:\n\u001b[2m  - → GET http://localhost:3000/api/company?roomCode=XXXXXX\u001b[22m\n\u001b[2m    - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.8127.18 Safari/537.36\u001b[22m\n\u001b[2m    - accept: */*\u001b[22m\n\u001b[2m    - accept-encoding: gzip,deflate,br\u001b[22m\n\n    at apiRequestContext.get: connect ECONNREFUSED ::1:3000\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/edge.spec.ts:25:30",
+                    "location": {
+                      "file": "apiRequestContext.get: connect ECONNREFUSED :",
+                      "column": 3000,
+                      "line": 1
+                    }
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "apiRequestContext.get: connect ECONNREFUSED :",
+                        "column": 3000,
+                        "line": 1
+                      },
+                      "message": "AggregateError: apiRequestContext.get: connect ECONNREFUSED ::1:3000\nconnect ECONNREFUSED 127.0.0.1:3000\nCall log:\n\u001b[2m  - → GET http://localhost:3000/api/company?roomCode=XXXXXX\u001b[22m\n\u001b[2m    - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.8127.18 Safari/537.36\u001b[22m\n\u001b[2m    - accept: */*\u001b[22m\n\u001b[2m    - accept-encoding: gzip,deflate,br\u001b[22m\n\n    at apiRequestContext.get: connect ECONNREFUSED ::1:3000\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/edge.spec.ts:25:30"
+                    }
+                  ],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-13T07:01:56.147Z",
+                  "startTime": "2026-11-13T07:43:29.244Z",
                   "annotations": [],
-                  "attachments": []
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/edge-API-rejects-unauthent-87ee2--client-supplied-admin-role-full/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/edge-API-rejects-unauthent-87ee2--client-supplied-admin-role-full/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "apiRequestContext.get: connect ECONNREFUSED :",
+                    "column": 3000,
+                    "line": 1
+                  }
                 }
               ],
-              "status": "expected"
+              "status": "unexpected"
             }
           ],
           "id": "4ad4bbb8656548b3a3f1-3cc1b9646797c88647b0",
@@ -503,7 +842,7 @@
           "specs": [
             {
               "title": "create room, every page and game loads without errors",
-              "ok": true,
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -514,20 +853,60 @@
                   "projectName": "full",
                   "results": [
                     {
-                      "workerIndex": 0,
+                      "workerIndex": 9,
                       "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 6081,
-                      "errors": [],
+                      "status": "failed",
+                      "duration": 119,
+                      "error": {
+                        "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n\n    at signUp (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:22:14)\n    at newUser (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:66:23)\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/rooms-and-games.spec.ts:7:27",
+                        "location": {
+                          "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                          "column": 14,
+                          "line": 22
+                        },
+                        "snippet": "   at tests/e2e/full/helpers.ts:22\n\n  20 |\n  21 | export async function signUp(page: Page, name: string, email = uniqueEmail('user')) {\n> 22 |   await page.goto('signup');\n     |              ^\n  23 |   await declineCookies(page);\n  24 |   await page.locator('input[type=text]').first().fill(name);\n  25 |   await page.locator('input[type=email]').fill(email);"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                            "column": 14,
+                            "line": 22
+                          },
+                          "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n\n\n   at tests/e2e/full/helpers.ts:22\n\n  20 |\n  21 | export async function signUp(page: Page, name: string, email = uniqueEmail('user')) {\n> 22 |   await page.goto('signup');\n     |              ^\n  23 |   await declineCookies(page);\n  24 |   await page.locator('input[type=text]').first().fill(name);\n  25 |   await page.locator('input[type=email]').fill(email);\n    at signUp (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:22:14)\n    at newUser (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:66:23)\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/rooms-and-games.spec.ts:7:27"
+                        }
+                      ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-11-13T07:02:02.678Z",
+                      "startTime": "2026-11-13T07:43:29.630Z",
                       "annotations": [],
-                      "attachments": []
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/rooms-and-games-single-use-56fd2-d-game-loads-without-errors-full/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/rooms-and-games-single-use-56fd2-d-game-loads-without-errors-full/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/rooms-and-games-single-use-56fd2-d-game-loads-without-errors-full/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                        "column": 14,
+                        "line": 22
+                      }
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
               "id": "5c7b70f98db60213c4d4-049ca61ede406f6e6bb7",
@@ -537,7 +916,7 @@
             },
             {
               "title": "session survives reload and the room persists",
-              "ok": true,
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -548,20 +927,60 @@
                   "projectName": "full",
                   "results": [
                     {
-                      "workerIndex": 0,
+                      "workerIndex": 10,
                       "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 5372,
-                      "errors": [],
+                      "status": "failed",
+                      "duration": 110,
+                      "error": {
+                        "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n\n    at signUp (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:22:14)\n    at newUser (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:66:23)\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/rooms-and-games.spec.ts:25:27",
+                        "location": {
+                          "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                          "column": 14,
+                          "line": 22
+                        },
+                        "snippet": "   at tests/e2e/full/helpers.ts:22\n\n  20 |\n  21 | export async function signUp(page: Page, name: string, email = uniqueEmail('user')) {\n> 22 |   await page.goto('signup');\n     |              ^\n  23 |   await declineCookies(page);\n  24 |   await page.locator('input[type=text]').first().fill(name);\n  25 |   await page.locator('input[type=email]').fill(email);"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                            "column": 14,
+                            "line": 22
+                          },
+                          "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n\n\n   at tests/e2e/full/helpers.ts:22\n\n  20 |\n  21 | export async function signUp(page: Page, name: string, email = uniqueEmail('user')) {\n> 22 |   await page.goto('signup');\n     |              ^\n  23 |   await declineCookies(page);\n  24 |   await page.locator('input[type=text]').first().fill(name);\n  25 |   await page.locator('input[type=email]').fill(email);\n    at signUp (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:22:14)\n    at newUser (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:66:23)\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/rooms-and-games.spec.ts:25:27"
+                        }
+                      ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-11-13T07:02:08.772Z",
+                      "startTime": "2026-11-13T07:43:30.119Z",
                       "annotations": [],
-                      "attachments": []
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/rooms-and-games-single-use-536b0-eload-and-the-room-persists-full/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/rooms-and-games-single-use-536b0-eload-and-the-room-persists-full/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/rooms-and-games-single-use-536b0-eload-and-the-room-persists-full/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                        "column": 14,
+                        "line": 22
+                      }
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
               "id": "5c7b70f98db60213c4d4-b82b34ec0f113f3cb54e",
@@ -571,7 +990,7 @@
             },
             {
               "title": "trivia: a correct answer earns points",
-              "ok": true,
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -582,20 +1001,60 @@
                   "projectName": "full",
                   "results": [
                     {
-                      "workerIndex": 0,
+                      "workerIndex": 11,
                       "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 8996,
-                      "errors": [],
+                      "status": "failed",
+                      "duration": 107,
+                      "error": {
+                        "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n\n    at signUp (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:22:14)\n    at newUser (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:66:23)\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/rooms-and-games.spec.ts:34:27",
+                        "location": {
+                          "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                          "column": 14,
+                          "line": 22
+                        },
+                        "snippet": "   at tests/e2e/full/helpers.ts:22\n\n  20 |\n  21 | export async function signUp(page: Page, name: string, email = uniqueEmail('user')) {\n> 22 |   await page.goto('signup');\n     |              ^\n  23 |   await declineCookies(page);\n  24 |   await page.locator('input[type=text]').first().fill(name);\n  25 |   await page.locator('input[type=email]').fill(email);"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                            "column": 14,
+                            "line": 22
+                          },
+                          "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n\n\n   at tests/e2e/full/helpers.ts:22\n\n  20 |\n  21 | export async function signUp(page: Page, name: string, email = uniqueEmail('user')) {\n> 22 |   await page.goto('signup');\n     |              ^\n  23 |   await declineCookies(page);\n  24 |   await page.locator('input[type=text]').first().fill(name);\n  25 |   await page.locator('input[type=email]').fill(email);\n    at signUp (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:22:14)\n    at newUser (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:66:23)\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/rooms-and-games.spec.ts:34:27"
+                        }
+                      ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-11-13T07:02:14.150Z",
+                      "startTime": "2026-11-13T07:43:30.595Z",
                       "annotations": [],
-                      "attachments": []
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/rooms-and-games-single-use-a240d-correct-answer-earns-points-full/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/rooms-and-games-single-use-a240d-correct-answer-earns-points-full/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/rooms-and-games-single-use-a240d-correct-answer-earns-points-full/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                        "column": 14,
+                        "line": 22
+                      }
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
               "id": "5c7b70f98db60213c4d4-25319bedc38f9c44fb14",
@@ -605,7 +1064,7 @@
             },
             {
               "title": "snake: starts and responds to the keyboard",
-              "ok": true,
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -616,20 +1075,60 @@
                   "projectName": "full",
                   "results": [
                     {
-                      "workerIndex": 0,
+                      "workerIndex": 12,
                       "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 6055,
-                      "errors": [],
+                      "status": "failed",
+                      "duration": 111,
+                      "error": {
+                        "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n\n    at signUp (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:22:14)\n    at newUser (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:66:23)\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/rooms-and-games.spec.ts:48:27",
+                        "location": {
+                          "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                          "column": 14,
+                          "line": 22
+                        },
+                        "snippet": "   at tests/e2e/full/helpers.ts:22\n\n  20 |\n  21 | export async function signUp(page: Page, name: string, email = uniqueEmail('user')) {\n> 22 |   await page.goto('signup');\n     |              ^\n  23 |   await declineCookies(page);\n  24 |   await page.locator('input[type=text]').first().fill(name);\n  25 |   await page.locator('input[type=email]').fill(email);"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                            "column": 14,
+                            "line": 22
+                          },
+                          "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n\n\n   at tests/e2e/full/helpers.ts:22\n\n  20 |\n  21 | export async function signUp(page: Page, name: string, email = uniqueEmail('user')) {\n> 22 |   await page.goto('signup');\n     |              ^\n  23 |   await declineCookies(page);\n  24 |   await page.locator('input[type=text]').first().fill(name);\n  25 |   await page.locator('input[type=email]').fill(email);\n    at signUp (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:22:14)\n    at newUser (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:66:23)\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/rooms-and-games.spec.ts:48:27"
+                        }
+                      ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-11-13T07:02:23.154Z",
+                      "startTime": "2026-11-13T07:43:31.057Z",
                       "annotations": [],
-                      "attachments": []
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/rooms-and-games-single-use-a5e35-nd-responds-to-the-keyboard-full/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/rooms-and-games-single-use-a5e35-nd-responds-to-the-keyboard-full/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/rooms-and-games-single-use-a5e35-nd-responds-to-the-keyboard-full/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                        "column": 14,
+                        "line": 22
+                      }
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
               "id": "5c7b70f98db60213c4d4-9ea17ab8af7dcc6ae626",
@@ -639,7 +1138,7 @@
             },
             {
               "title": "memory: starts a game",
-              "ok": true,
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -650,20 +1149,60 @@
                   "projectName": "full",
                   "results": [
                     {
-                      "workerIndex": 0,
+                      "workerIndex": 13,
                       "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 5599,
-                      "errors": [],
+                      "status": "failed",
+                      "duration": 114,
+                      "error": {
+                        "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n\n    at signUp (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:22:14)\n    at newUser (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:66:23)\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/rooms-and-games.spec.ts:62:27",
+                        "location": {
+                          "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                          "column": 14,
+                          "line": 22
+                        },
+                        "snippet": "   at tests/e2e/full/helpers.ts:22\n\n  20 |\n  21 | export async function signUp(page: Page, name: string, email = uniqueEmail('user')) {\n> 22 |   await page.goto('signup');\n     |              ^\n  23 |   await declineCookies(page);\n  24 |   await page.locator('input[type=text]').first().fill(name);\n  25 |   await page.locator('input[type=email]').fill(email);"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                            "column": 14,
+                            "line": 22
+                          },
+                          "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n\n\n   at tests/e2e/full/helpers.ts:22\n\n  20 |\n  21 | export async function signUp(page: Page, name: string, email = uniqueEmail('user')) {\n> 22 |   await page.goto('signup');\n     |              ^\n  23 |   await declineCookies(page);\n  24 |   await page.locator('input[type=text]').first().fill(name);\n  25 |   await page.locator('input[type=email]').fill(email);\n    at signUp (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:22:14)\n    at newUser (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:66:23)\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/rooms-and-games.spec.ts:62:27"
+                        }
+                      ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-11-13T07:02:29.214Z",
+                      "startTime": "2026-11-13T07:43:31.522Z",
                       "annotations": [],
-                      "attachments": []
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/rooms-and-games-single-user-in-a-room-memory-starts-a-game-full/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/rooms-and-games-single-user-in-a-room-memory-starts-a-game-full/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/rooms-and-games-single-user-in-a-room-memory-starts-a-game-full/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                        "column": 14,
+                        "line": 22
+                      }
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
               "id": "5c7b70f98db60213c4d4-3f3141b7ba46ddc78b92",
@@ -673,7 +1212,7 @@
             },
             {
               "title": "typing: countdown starts",
-              "ok": true,
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -684,20 +1223,60 @@
                   "projectName": "full",
                   "results": [
                     {
-                      "workerIndex": 0,
+                      "workerIndex": 14,
                       "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 5746,
-                      "errors": [],
+                      "status": "failed",
+                      "duration": 105,
+                      "error": {
+                        "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n\n    at signUp (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:22:14)\n    at newUser (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:66:23)\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/rooms-and-games.spec.ts:71:27",
+                        "location": {
+                          "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                          "column": 14,
+                          "line": 22
+                        },
+                        "snippet": "   at tests/e2e/full/helpers.ts:22\n\n  20 |\n  21 | export async function signUp(page: Page, name: string, email = uniqueEmail('user')) {\n> 22 |   await page.goto('signup');\n     |              ^\n  23 |   await declineCookies(page);\n  24 |   await page.locator('input[type=text]').first().fill(name);\n  25 |   await page.locator('input[type=email]').fill(email);"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                            "column": 14,
+                            "line": 22
+                          },
+                          "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n\n\n   at tests/e2e/full/helpers.ts:22\n\n  20 |\n  21 | export async function signUp(page: Page, name: string, email = uniqueEmail('user')) {\n> 22 |   await page.goto('signup');\n     |              ^\n  23 |   await declineCookies(page);\n  24 |   await page.locator('input[type=text]').first().fill(name);\n  25 |   await page.locator('input[type=email]').fill(email);\n    at signUp (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:22:14)\n    at newUser (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:66:23)\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/rooms-and-games.spec.ts:71:27"
+                        }
+                      ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-11-13T07:02:34.819Z",
+                      "startTime": "2026-11-13T07:43:31.988Z",
                       "annotations": [],
-                      "attachments": []
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/rooms-and-games-single-use-d1029-oom-typing-countdown-starts-full/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/rooms-and-games-single-use-d1029-oom-typing-countdown-starts-full/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/rooms-and-games-single-use-d1029-oom-typing-countdown-starts-full/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                        "column": 14,
+                        "line": 22
+                      }
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
               "id": "5c7b70f98db60213c4d4-9c2ffa0f98ba612d6485",
@@ -707,7 +1286,7 @@
             },
             {
               "title": "avatar shop loads and rewards are locked with zero balance",
-              "ok": true,
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -718,20 +1297,60 @@
                   "projectName": "full",
                   "results": [
                     {
-                      "workerIndex": 0,
+                      "workerIndex": 15,
                       "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 6468,
-                      "errors": [],
+                      "status": "failed",
+                      "duration": 143,
+                      "error": {
+                        "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n\n    at signUp (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:22:14)\n    at newUser (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:66:23)\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/rooms-and-games.spec.ts:80:27",
+                        "location": {
+                          "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                          "column": 14,
+                          "line": 22
+                        },
+                        "snippet": "   at tests/e2e/full/helpers.ts:22\n\n  20 |\n  21 | export async function signUp(page: Page, name: string, email = uniqueEmail('user')) {\n> 22 |   await page.goto('signup');\n     |              ^\n  23 |   await declineCookies(page);\n  24 |   await page.locator('input[type=text]').first().fill(name);\n  25 |   await page.locator('input[type=email]').fill(email);"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                            "column": 14,
+                            "line": 22
+                          },
+                          "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n\n\n   at tests/e2e/full/helpers.ts:22\n\n  20 |\n  21 | export async function signUp(page: Page, name: string, email = uniqueEmail('user')) {\n> 22 |   await page.goto('signup');\n     |              ^\n  23 |   await declineCookies(page);\n  24 |   await page.locator('input[type=text]').first().fill(name);\n  25 |   await page.locator('input[type=email]').fill(email);\n    at signUp (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:22:14)\n    at newUser (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:66:23)\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/rooms-and-games.spec.ts:80:27"
+                        }
+                      ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-11-13T07:02:40.573Z",
+                      "startTime": "2026-11-13T07:43:32.448Z",
                       "annotations": [],
-                      "attachments": []
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/rooms-and-games-single-use-a9814-re-locked-with-zero-balance-full/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/rooms-and-games-single-use-a9814-re-locked-with-zero-balance-full/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/rooms-and-games-single-use-a9814-re-locked-with-zero-balance-full/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                        "column": 14,
+                        "line": 22
+                      }
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
               "id": "5c7b70f98db60213c4d4-2a3eee9865654e9b1a04",
@@ -741,7 +1360,7 @@
             },
             {
               "title": "admin panel works for the room creator",
-              "ok": true,
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -752,20 +1371,60 @@
                   "projectName": "full",
                   "results": [
                     {
-                      "workerIndex": 0,
+                      "workerIndex": 16,
                       "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 5569,
-                      "errors": [],
+                      "status": "failed",
+                      "duration": 113,
+                      "error": {
+                        "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n\n    at signUp (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:22:14)\n    at newUser (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:66:23)\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/rooms-and-games.spec.ts:92:27",
+                        "location": {
+                          "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                          "column": 14,
+                          "line": 22
+                        },
+                        "snippet": "   at tests/e2e/full/helpers.ts:22\n\n  20 |\n  21 | export async function signUp(page: Page, name: string, email = uniqueEmail('user')) {\n> 22 |   await page.goto('signup');\n     |              ^\n  23 |   await declineCookies(page);\n  24 |   await page.locator('input[type=text]').first().fill(name);\n  25 |   await page.locator('input[type=email]').fill(email);"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                            "column": 14,
+                            "line": 22
+                          },
+                          "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/signup\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/signup\", waiting until \"load\"\u001b[22m\n\n\n   at tests/e2e/full/helpers.ts:22\n\n  20 |\n  21 | export async function signUp(page: Page, name: string, email = uniqueEmail('user')) {\n> 22 |   await page.goto('signup');\n     |              ^\n  23 |   await declineCookies(page);\n  24 |   await page.locator('input[type=text]').first().fill(name);\n  25 |   await page.locator('input[type=email]').fill(email);\n    at signUp (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:22:14)\n    at newUser (/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts:66:23)\n    at /Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/rooms-and-games.spec.ts:92:27"
+                        }
+                      ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-11-13T07:02:47.047Z",
+                      "startTime": "2026-11-13T07:43:32.962Z",
                       "annotations": [],
-                      "attachments": []
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/rooms-and-games-single-use-b3287--works-for-the-room-creator-full/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/rooms-and-games-single-use-b3287--works-for-the-room-creator-full/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/srijjit/Desktop/Intern_Break_Space/test-results/rooms-and-games-single-use-b3287--works-for-the-room-creator-full/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/srijjit/Desktop/Intern_Break_Space/tests/e2e/full/helpers.ts",
+                        "column": 14,
+                        "line": 22
+                      }
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
               "id": "5c7b70f98db60213c4d4-1055cde3f190ffd302b3",
@@ -780,11 +1439,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-11-13T07:00:50.379Z",
-    "duration": 122655.897,
-    "expected": 18,
+    "startTime": "2026-11-13T07:36:03.267Z",
+    "duration": 449975.37600000005,
+    "expected": 1,
     "skipped": 0,
-    "unexpected": 0,
+    "unexpected": 17,
     "flaky": 0
   }
 }
