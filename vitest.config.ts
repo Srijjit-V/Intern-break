@@ -12,6 +12,8 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
+    // Importing the server entry builds a MySQL pool (lazy, never connects in unit tests).
+    env: { DB_HOST: 'localhost', DB_USER: 'test', DB_PASS: 'test', DB_NAME: 'test', BETTER_AUTH_SECRET: 'test-secret-test-secret-test-secret' },
     setupFiles: './src/test/setup.ts',
     // Use forks pool to isolate memory per test file (prevents OOM)
     pool: 'forks',
@@ -40,16 +42,8 @@ export default defineConfig({
       'virtual:format-overrides': path.resolve(__dirname, './src/test/format-overrides-module.ts'),
       'virtual:content-runtime': contentRuntimeAlias,
       '@airo/content': path.resolve(__dirname, './content-lib/src/index.ts'),
-      '@/': path.resolve(__dirname, './src/'),
-      '@/components': path.resolve(__dirname, './src/components'),
-      '@/lib': path.resolve(__dirname, './src/lib'),
       '@/api': path.resolve(__dirname, './src/server/api'),
-      '@/db': path.resolve(__dirname, './src/server/db'),
-      '@/layouts': path.resolve(__dirname, './src/layouts'),
-      '@/patterns': path.resolve(__dirname, './src/patterns'),
-      '@/pages': path.resolve(__dirname, './src/pages'),
-      '@/hooks': path.resolve(__dirname, './src/hooks'),
-      '@/styles': path.resolve(__dirname, './src/styles'),
+      '@': path.resolve(__dirname, './src'),
     },
   },
 });

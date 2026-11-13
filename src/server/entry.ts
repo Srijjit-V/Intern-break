@@ -352,7 +352,6 @@ if (import.meta.env.PROD) {
 		try {
 			const dbClient = "./db/client" + ".js";
 			// Source-literal optional module path; no request, environment, or user input reaches import().
-			// eslint-disable-next-line no-unsanitized/method
 			mod = await import(/* @vite-ignore */ dbClient);
 		} catch (error: unknown) {
 			const code = (error as { code?: string } | null)?.code;

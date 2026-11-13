@@ -1,10 +1,7 @@
 {
-  "name": "v8-app-template",
+  "name": "intern-break",
   "version": "1.0.0",
   "type": "module",
-  "imports": {
-    "#airo/secrets": "./export-plugins/airo-secrets.ts"
-  },
   "scripts": {
     "dev": "vite",
     "build": "vite build && vite build --ssr src/server/entry.ts",
@@ -18,7 +15,11 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,json,md}\"",
     "clean": "rm -rf dist node_modules/.vite",
     "reset": "npm run clean && npm install",
-    "audit": "better-npm-audit audit --level high --registry=https://registry.npmjs.org"
+    "audit": "better-npm-audit audit --level high --registry=https://registry.npmjs.org",
+    "start": "node dist/server.bundle.mjs",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "db:seed": "tsx scripts/seed.ts"
   },
   "dependencies": {
     "@dr.pogodin/react-helmet": "^3.0.5",
