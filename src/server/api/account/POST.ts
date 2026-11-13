@@ -4,6 +4,10 @@ import { getAuth } from '@/lib/auth/auth';
 import { db } from '../../db/client.js';
 import { accountRoomHistory, companyMembers, companyRooms } from '../../db/schema.js';
 
+// A pre-auth roster row can be claimed by display name, which proves nothing,
+// so it never hands over admin rights.
+const clampClaimedRole = (role: string) => (role === 'admin' || role === 'coadmin' ? 'employee' : role);
+
 async function getSessionUser(req: Request) {
   const auth = getAuth();
   const headers = new Headers();
@@ -45,7 +49,7 @@ export default async function handler(req: Request, res: Response) {
         const legacyMember = await db.select().from(companyMembers).where(and(eq(companyMembers.roomCode, roomCode), eq(companyMembers.name, displayName))).limit(1);
         if (legacyMember[0] && !legacyMember[0].accountId) {
           await db.update(companyMembers)
-            .set({ accountId: session.user.id, name: displayName, color: avatarColor, updatedAt: new Date() })
+            .set({ accountId: session.user.id, name: displayName, color: avatarColor, role: clampClaimedRole(legacyMember[0].role), updatedAt: new Date() })
             .where(eq(companyMembers.id, legacyMember[0].id));
         } else {
           await db.insert(companyMembers)
