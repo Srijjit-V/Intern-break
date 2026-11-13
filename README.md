@@ -116,7 +116,7 @@ npx playwright test --project=full # against a running app on :3000
 
 Measured on 2026-11-12 on a Mac with Node 24, MySQL 8.4 (local, not Docker):
 
-- Lint: 0 errors, 26 warnings. Type-check: clean. Unit tests: 77 passed.
+- Lint: 0 errors, 26 warnings. Type-check: clean. Unit tests: 82 passed.
 - Full-stack e2e: 18 passed (auth, rooms, every page and game loading, shop and rewards, admin, a two-user typing race from lobby to results, wrong room code, server-down state, API authorization).
 - Demo e2e: 5 passed (no `/api` requests, no failed responses, deep link refresh, sample room, trivia).
 - Bugs found and fixed: [docs/verification/bugs.md](docs/verification/bugs.md). Baseline before the work: [docs/verification/baseline.md](docs/verification/baseline.md).
