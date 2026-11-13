@@ -16,8 +16,7 @@ test('server down: the UI shows an error state, not a blank page', async ({ brow
   await createRoom(page, 'Offline Co', 'Offline Tester');
   await page.route('**/api/**', (route) => route.abort());
   await page.goto('leaderboard');
-  await expect(page.locator('body')).not.toBeEmpty();
-  expect((await page.locator('body').innerText()).trim().length).toBeGreaterThan(20);
+  await expect(page.getByRole('alert')).toContainText(/reach the server|try again/i, { timeout: 15_000 });
   expect(errors).toEqual([]);
   await ctx.close();
 });

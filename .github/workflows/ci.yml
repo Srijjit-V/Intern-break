@@ -169,7 +169,7 @@ jobs:
           curl -sf localhost:3000/api/health | tee test-results/health.json
           curl -sf -X POST localhost:3000/api/auth/sign-up/email \
             -H 'content-type: application/json' -H 'origin: http://localhost:3000' \
-            -d '{"email":"ci@example.test","password":"password-12345","name":"CI"}' | tee test-results/signup.json
+            -d '{"email":"ci@example.test","password":"Password-12345!","name":"CI"}' | tee test-results/signup.json
       - name: Logs
         if: always()
         run: docker compose logs > test-results/compose.log || true

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { PASSWORD, signIn, signUp, uniqueEmail } from './helpers';
+import { PASSWORD, declineCookies, signIn, signUp, uniqueEmail } from './helpers';
 
 test('sign up, survive reload, sign out, sign in again', async ({ page }) => {
   const email = await signUp(page, 'Auth Tester');
@@ -30,6 +30,7 @@ test('duplicate sign up shows an error', async ({ browser, page }) => {
   const ctx2 = await browser.newContext();
   const p2 = await ctx2.newPage();
   await p2.goto('signup');
+  await declineCookies(p2);
   await p2.locator('input[type=text]').first().fill('Dup Two');
   await p2.locator('input[type=email]').fill(email);
   await p2.locator('input[type=password]').fill(PASSWORD);

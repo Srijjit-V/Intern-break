@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Outlet, createBrowserRouter, type RouteObject } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import AiroErrorBoundary from '../export-plugins/AiroErrorBoundary';
@@ -38,6 +38,12 @@ const routeTree: RouteObject[] = [{
   children: routes
 }];
 const router = createBrowserRouter(routeTree, { basename: import.meta.env.BASE_URL });
+/** The server render has no cookie banner, so mount it only after hydration (avoids React error #418). */
+function AfterHydration({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  return mounted ? <>{children}</> : null;
+}
 export default function App() {
   return <>
       {DEMO && <DemoBanner />}
@@ -48,10 +54,12 @@ export default function App() {
         directly without importing App), so no SSR gate is needed here.
        */}
       {/* No cookie banner in the demo: it loads no third-party analytics. */}
-      {!DEMO && <CookieBannerErrorBoundary>
-        <Suspense fallback={null}>
-          <CookieBanner />
-        </Suspense>
-      </CookieBannerErrorBoundary>}
+      {!DEMO && <AfterHydration>
+        <CookieBannerErrorBoundary>
+          <Suspense fallback={null}>
+            <CookieBanner />
+          </Suspense>
+        </CookieBannerErrorBoundary>
+      </AfterHydration>}
     </>;
 }

@@ -14,7 +14,7 @@ test.describe('single user in a room', () => {
     const routes = ['games', 'flappy', 'freezeria', 'snake', 'memory', 'trivia', 'set', 'crossy', 'typing', 'typing-race', 'leaderboard', 'closet', 'rewards', 'points-history', 'profile', 'admin'];
     for (const route of routes) {
       await page.goto(route);
-      await expect(page, route).toHaveURL(new RegExp(`/${route}$`));
+      await expect(page, route).toHaveURL(new RegExp(`/${route}/?$`));
       await expect(page.locator('body'), route).not.toContainText(/something went wrong|application error/i);
     }
     expect(errors).toEqual([]);
@@ -76,15 +76,15 @@ test.describe('single user in a room', () => {
     await ctx.close();
   });
 
-  test('avatar shop and rewards show locked state with zero balance', async ({ browser }) => {
+  test('avatar shop loads and rewards are locked with zero balance', async ({ browser }) => {
     const { ctx, page } = await newUser(browser, 'Shop Tester');
     await createRoom(page, 'Shop Co', 'Shop Tester');
     await page.goto('closet');
     await expect(page.getByText('Avatar Closet')).toBeVisible();
     await page.goto('rewards');
     await expect(page.getByText('Classic T-shirt')).toBeVisible();
-    await page.getByRole('button', { name: 'Redeem reward' }).first().click();
-    await expect(page.getByText(/not enough|need|insufficient|more diamonds/i).first()).toBeVisible();
+    // Nothing can be redeemed with a zero balance.
+    await expect(page.getByRole('button', { name: 'Redeem reward' }).first()).toBeDisabled();
     await ctx.close();
   });
 
@@ -92,7 +92,7 @@ test.describe('single user in a room', () => {
     const { ctx, page } = await newUser(browser, 'Admin Tester');
     await createRoom(page, 'Admin Co', 'Admin Tester');
     await page.goto('admin');
-    await expect(page.getByText('Admin Panel')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Admin Panel' }).first()).toBeVisible();
     await expect(page.getByText('Member Management')).toBeVisible();
     await ctx.close();
   });
