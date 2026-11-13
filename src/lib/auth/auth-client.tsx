@@ -8,6 +8,7 @@
 import { createAuthClient } from 'better-auth/react';
 import { ReactNode, useEffect, useState } from 'react';
 import { Navigate, useLocation } from "react-router";
+import { DEMO, getDemoAccount, resetDemoProfile, withBase } from '../demo/mode';
 import { SESSION_RECOVERY_URL, claimSessionRecovery, clearSessionRecovery } from './session-recovery';
 
 // Auth client - baseURL must be the full origin for BetterAuth's URL construction.
@@ -66,12 +67,15 @@ function useStaleSessionRecovery(error: unknown, isPending: boolean, isAuthentic
   }, [error, isPending, isAuthenticated]);
 }
 export const authClient = _authClient;
-export const {
-  signIn,
-  signUp,
-  signOut
-} = _authClient;
+const demoOk = async () => ({ data: {}, error: null });
+export const signIn = DEMO ? { email: demoOk } as unknown as typeof _authClient.signIn : _authClient.signIn;
+export const signUp = DEMO ? { email: demoOk } as unknown as typeof _authClient.signUp : _authClient.signUp;
+export const signOut: typeof _authClient.signOut = DEMO ? (async () => {
+  resetDemoProfile();
+  return { data: { success: true }, error: null };
+}) as unknown as typeof _authClient.signOut : _authClient.signOut;
 export async function changePassword(currentPassword: string, newPassword: string): Promise<void> {
+  if (DEMO) return; // demo profile has no password
   const result = await _authClient.changePassword({
     currentPassword,
     newPassword
@@ -89,7 +93,13 @@ export async function changePassword(currentPassword: string, newPassword: strin
  *   if (isPending) return <Spinner />;
  *   return isAuthenticated ? <span>{user.name}</span> : <a href="/login">Sign In</a>;
  */
-export function useSession() {
+// Chosen once at module load (DEMO is a build constant), so hook order never changes.
+function useDemoSession() {
+  const user = getDemoAccount();
+  return { session: { user }, user, isPending: false, error: null, isAuthenticated: true };
+}
+
+function useRealSession() {
   const {
     data: session,
     isPending,
@@ -105,6 +115,9 @@ export function useSession() {
     isAuthenticated
   };
 }
+
+// Chosen once at module load (DEMO is a build constant), so hook order never changes.
+export const useSession = (DEMO ? useDemoSession : useRealSession) as typeof useRealSession;
 
 // Alias for useSession (common naming convention)
 export const useAuth = useSession;
@@ -189,7 +202,7 @@ export function LogoutButton({
     setIsLoading(true);
     try {
       await signOut();
-      window.location.href = '/login';
+      window.location.href = withBase('login');
     } catch (error) {
       console.error('Logout failed:', error);
       setIsLoading(false);

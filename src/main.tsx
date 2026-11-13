@@ -5,6 +5,11 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AiroErrorBoundary from '../export-plugins/AiroErrorBoundary';
 import App from './App';
 import './styles/globals.css';
+import { DEMO } from './lib/demo/mode';
+import { installFakeApi } from './lib/demo/fake-api';
+
+// Demo builds answer every /api call in the browser; nothing reaches a server.
+if (DEMO) installFakeApi();
 
 if (import.meta.env.MODE === 'development') {
   const meta = document.createElement('meta');

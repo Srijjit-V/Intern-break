@@ -69,6 +69,14 @@ function fromNomadFile(configPath: string): DatabaseCredentials {
 }
 
 export function getDatabaseCredentials(): DatabaseCredentials {
+  const creds = resolveCredentials();
+  if (creds.ssl && !creds.ssl.rejectUnauthorized && env.NODE_ENV === 'production') {
+    console.warn('db.ssl.insecure: TLS certificate verification is disabled (legacy Airo config or DB_SSL_REJECT_UNAUTHORIZED=false)');
+  }
+  return creds;
+}
+
+function resolveCredentials(): DatabaseCredentials {
   if (env.DATABASE_URL) return fromUrl(env.DATABASE_URL);
 
   const named = ['DB_HOST', 'DB_USER', 'DB_PASS', 'DB_NAME'] as const;
