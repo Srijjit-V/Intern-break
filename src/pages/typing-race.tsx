@@ -674,11 +674,11 @@ export default function TypingRacePage() {
   // Live races render only authenticated people who explicitly joined this grid.
   // DNF participants (progress === -1) are excluded from the track but shown in leaderboard.
   // Demo cars remain available only before a room race exists.
-  const activeLiveParticipants = liveParticipants.filter((p) => p.progress !== -1);
+  const activeLiveParticipants = useMemo(() => liveParticipants.filter((p) => p.progress !== -1), [liveParticipants]);
   const isJoinedLiveRace = liveParticipants.some((participant) => participant.accountId === account?.id);
-  const racers = liveRace
+  const racers = useMemo(() => liveRace
     ? activeLiveParticipants.map((participant) => ({ id: participant.accountId, name: participant.displayName, color: participant.color, role: 'employee' as const, points: 0, allTimePoints: 0, gameHighScore: 0, flappyRunsToday: 0, flappyRunDate: '', flappyOfficialScore: 0, typingHighScore: 0, triviaHighScore: 0 }))
-    : user ? [{ ...user }] : [];
+    : user ? [{ ...user }] : [], [liveRace, activeLiveParticipants, user]);
 
   const visibleRacers: DisplayRacer[] = useMemo(() => {
     if (racers.length) {
@@ -715,7 +715,7 @@ export default function TypingRacePage() {
         isUser: false,
       })),
     ];
-  }, [account, customCar, activeLiveParticipants, racers, user?.name]);
+  }, [account, customCar, liveRace, racers, user?.name]);
 
   // Bug 3 fix: header count always matches the actual rendered racer list length.
   // Demo bots only appear when there is no live room race AND the user object is loaded.

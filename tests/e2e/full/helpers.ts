@@ -9,6 +9,8 @@ export function trackErrors(page: Page): string[] {
   const errors: string[] = [];
   // React #419: renderToString cannot resolve lazy routes, so the client re-renders. Known, see docs/verification/bugs.md.
   page.on('pageerror', (e) => !/Minified React error #419/.test(e.message) && errors.push(e.message));
+  // A Content Security Policy violation is a bug: the app must work under its own CSP.
+  page.on('console', (m) => m.type() === 'error' && /Content Security Policy|Refused to/.test(m.text()) && errors.push(m.text()));
   return errors;
 }
 

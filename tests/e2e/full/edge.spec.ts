@@ -40,3 +40,28 @@ test('API rejects unauthenticated calls and ignores client-supplied admin role',
   expect(neg.status()).toBe(400);
   await a.ctx.close(); await m.ctx.close();
 });
+
+test('no third-party scripts or trackers load, and security headers are present', async ({ browser }) => {
+  const ctx = await browser.newContext();
+  const page = await ctx.newPage();
+  const hosts = new Set<string>();
+  page.on('request', (r) => hosts.add(new URL(r.url()).host));
+  const response = await page.goto('login');
+  await page.waitForTimeout(1500);
+  const allowed = new Set([new URL(page.url()).host, 'fonts.googleapis.com', 'fonts.gstatic.com']);
+  expect([...hosts].filter((h) => !allowed.has(h))).toEqual([]);
+  const headers = response!.headers();
+  expect(headers['content-security-policy']).toContain("script-src 'self'");
+  expect(headers['x-powered-by']).toBeUndefined();
+  await ctx.close();
+});
+
+test('repeated wrong passwords are rate limited', async ({ request }) => {
+  const email = `ratelimit-${Date.now()}@example.test`;
+  let last = 0;
+  for (let i = 0; i < 10; i++) {
+    const res = await request.post('api/auth/sign-in/email', { data: { email, password: 'Wrong-Pass-1!' }, headers: { origin: new URL(process.env.E2E_BASE_URL ?? 'http://localhost:3000').origin } });
+    last = res.status();
+  }
+  expect(last).toBe(429);
+});

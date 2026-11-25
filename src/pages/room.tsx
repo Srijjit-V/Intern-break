@@ -59,7 +59,6 @@ export default function RoomPage() {
       setCreateName(n => n || bestName);
       setJoinName(n => n || bestName);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accountUser?.name, searchParams]);
   useEffect(() => {
     const storedTheme = localStorage.getItem('ibs-theme');
@@ -73,7 +72,6 @@ export default function RoomPage() {
     if (/^[A-Z0-9]{6}$/.test(linkedRoomCode)) {
       void handleJoinCodeChange(linkedRoomCode);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
   async function handleJoinCodeChange(val: string) {
     const code = val.toUpperCase();

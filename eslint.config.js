@@ -68,4 +68,9 @@ export default [
       'no-var': 'error',
     },
   },
+  {
+    // Fast-refresh hint only (dev HMR). These files export helpers or variants next to components on purpose.
+    files: ['src/components/ui/**', 'src/lib/auth/auth-client.tsx', 'src/routes.tsx', 'src/entry-server.tsx'],
+    rules: { 'react-refresh/only-export-components': 'off' },
+  },
 ];

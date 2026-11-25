@@ -187,7 +187,6 @@ export default function ChallengesPage() {
       window.removeEventListener('ibs-room-updated', loadLocal);
       document.removeEventListener('visibilitychange', onVisibility);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
     if (assignGroupId) setTimeout(() => inputRef.current?.focus(), 50);

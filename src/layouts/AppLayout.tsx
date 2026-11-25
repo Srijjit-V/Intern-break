@@ -89,7 +89,6 @@ export default function AppLayout({
     }
     window.addEventListener('ibs-theme-updated', onThemeUpdated);
     return () => window.removeEventListener('ibs-theme-updated', onThemeUpdated);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   function togglePinned(id: PlayableGameId) {
     setPinnedIds(current => {

@@ -70,6 +70,9 @@ export default function SnakePage() {
   const pendingDir = useRef<Dir | null>(null);
 
   const user = getUser();
+  // tick() must not depend on the user object (getUser() returns a new one every render).
+  const userRef = useRef(user);
+  userRef.current = user;
   const userColor = user?.color ?? '#6c63ff';
 
   useEffect(() => {
@@ -77,7 +80,7 @@ export default function SnakePage() {
     setLeaderboard(lb.slice(0, 5));
     const me = lb.find((e) => e.name === user?.name);
     if (me) setBest(me.score);
-  }, []);
+  }, [user?.name]);
 
   const stopTick = useCallback(() => {
     if (tickRef.current) { window.clearInterval(tickRef.current); tickRef.current = null; }
@@ -100,11 +103,11 @@ export default function SnakePage() {
       stopTick();
       saveSnakeScore(scoreRef.current);
       const updatedLeaderboard = getSnakeLeaderboard();
-      const placement = Math.max(1, updatedLeaderboard.findIndex((entry) => entry.name === user?.name) + 1);
-      if (user) awardGamePoints(user, placement);
+      const placement = Math.max(1, updatedLeaderboard.findIndex((entry) => entry.name === userRef.current?.name) + 1);
+      if (userRef.current) awardGamePoints(userRef.current, placement);
       const lb = updatedLeaderboard;
       setLeaderboard(lb.slice(0, 5));
-      const me = lb.find((e) => e.name === user?.name);
+      const me = lb.find((e) => e.name === userRef.current?.name);
       if (me) setBest(me.score);
       return;
     }
@@ -119,7 +122,7 @@ export default function SnakePage() {
       scoreRef.current += 10;
       setScore(scoreRef.current);
     }
-  }, [stopTick, user?.name]);
+  }, [stopTick]);
 
   const startGame = useCallback(() => {
     stopTick();

@@ -6,7 +6,7 @@ export const useNavigate = () => {
   const navigate = useRouterNavigate();
   return (to: Path | number, options?: {
     replace?: boolean;
-    state?: any;
+    state?: unknown;
   }) => {
     if (typeof to === 'number') {
       navigate(to);
