@@ -26,10 +26,12 @@ export default async function handler(req: Request, res: Response) {
 
     if (action === 'upsert-membership') {
       if (!displayName || !avatarColor) return res.status(400).json({ error: 'displayName and avatarColor are required' });
-      // Roles are never taken from the client: first member of an empty room is
-      // admin, later joiners are employees, existing members keep their role.
-      const anyMember = await db.select({ id: companyMembers.id }).from(companyMembers).where(eq(companyMembers.roomCode, roomCode)).limit(1);
-      const safeRole = anyMember[0] ? 'employee' : 'admin';
+      // Roles are never taken from the client: the room's creator is admin, everyone else employee.
+      await db.insert(companyRooms)
+        .values({ roomCode, companyName: companyName || 'Intern Break Space', createdByAccountId: session.user.id })
+        .onDuplicateKeyUpdate({ set: { updatedAt: new Date() } });
+      const [roomRow] = await db.select().from(companyRooms).where(eq(companyRooms.roomCode, roomCode)).limit(1);
+      const safeRole = roomRow?.createdByAccountId === session.user.id ? 'admin' : 'employee';
       const existing = await db.select().from(accountRoomHistory).where(and(eq(accountRoomHistory.accountId, session.user.id), eq(accountRoomHistory.roomCode, roomCode))).limit(1);
       if (existing[0]) {
         await db.update(accountRoomHistory).set({ displayName, avatarColor, avatarEmoji: avatarEmoji || null, leftAt: null, lastVisitedAt: new Date() }).where(eq(accountRoomHistory.id, existing[0].id));
@@ -37,8 +39,6 @@ export default async function handler(req: Request, res: Response) {
         await db.insert(accountRoomHistory).values({ accountId: session.user.id, roomCode, displayName, avatarColor, avatarEmoji: avatarEmoji || null, role: safeRole });
       }
 
-      const room = await db.select().from(companyRooms).where(eq(companyRooms.roomCode, roomCode)).limit(1);
-      if (!room[0]) await db.insert(companyRooms).values({ roomCode, companyName: companyName || 'Intern Break Space' });
       const member = await db.select().from(companyMembers).where(and(eq(companyMembers.roomCode, roomCode), eq(companyMembers.accountId, session.user.id))).limit(1);
       if (member[0]) {
         await db.update(companyMembers).set({ name: displayName, color: avatarColor, accountId: session.user.id, updatedAt: new Date() }).where(eq(companyMembers.id, member[0].id));

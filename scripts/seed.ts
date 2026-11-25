@@ -28,6 +28,8 @@ for (const p of people) {
   await db.insert(companyMembers)
     .values({ roomCode: ROOM, accountId: row.id, name: p.name, color: p.color, role: p.role, points: p.points, allTimePoints: p.points, carryoverPoints: p.points })
     .onDuplicateKeyUpdate({ set: { name: p.name, role: p.role } });
+  // The first person in the list is the room's creator and therefore its admin.
+  if (p.role === 'admin') await db.update(companyRooms).set({ createdByAccountId: row.id }).where(eq(companyRooms.roomCode, ROOM));
   const [hist] = await db.select().from(accountRoomHistory).where(eq(accountRoomHistory.accountId, row.id)).limit(1);
   if (!hist) await db.insert(accountRoomHistory).values({ accountId: row.id, roomCode: ROOM, displayName: p.name, avatarColor: p.color, role: p.role });
 }

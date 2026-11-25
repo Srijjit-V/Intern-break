@@ -1,0 +1,1 @@
+ALTER TABLE `company_rooms` ADD `created_by_account_id` varchar(36);

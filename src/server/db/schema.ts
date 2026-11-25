@@ -4,6 +4,8 @@ export const companyRooms = mysqlTable('company_rooms', {
   id: int('id').primaryKey().autoincrement(),
   roomCode: varchar('room_code', { length: 64 }).notNull().unique(),
   companyName: varchar('company_name', { length: 255 }).notNull(),
+  // The only account that is made admin automatically. NULL for rooms created before this column existed.
+  createdByAccountId: varchar('created_by_account_id', { length: 36 }),
   roomData: json('room_data'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),

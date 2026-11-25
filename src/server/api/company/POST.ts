@@ -15,19 +15,15 @@ export default async function handler(req: Request, res: Response) {
     if (!roomCode || !action) return res.status(400).json({ error: 'roomCode and action are required' });
 
     if (action === 'sync-member') {
-      // Roles are never taken from the client: the first member of an empty room
-      // becomes its admin, everyone else joins as employee and keeps whatever
-      // role an admin later gave them (set-role).
-      const anyMember = await db.select({ id: companyMembers.id }).from(companyMembers).where(eq(companyMembers.roomCode, roomCode)).limit(1);
-      const newMemberRole = anyMember[0] ? 'employee' : 'admin';
-
-      // Upsert the room itself first. Two concurrent "create room" calls with
-      // the same code would both hit the unique(roomCode) constraint here —
-      // the second one is simply ignored, so we never end up with orphaned
-      // room rows either.
+      // Roles are never taken from the client. The room's creator is its admin; everyone else joins as
+      // employee, and keeps whatever role an admin later gave them (set-role). An empty room does not
+      // hand admin to the next person to show up.
+      // Insert-or-touch first so two concurrent creators resolve to one stored creator.
       await db.insert(companyRooms)
-        .values({ roomCode, companyName: companyName || 'Company' })
+        .values({ roomCode, companyName: companyName || 'Company', createdByAccountId: session.user.id })
         .onDuplicateKeyUpdate({ set: { updatedAt: new Date() } });
+      const [roomRow] = await db.select().from(companyRooms).where(eq(companyRooms.roomCode, roomCode)).limit(1);
+      const newMemberRole = roomRow?.createdByAccountId === session.user.id ? 'admin' : 'employee';
 
       const localPoints = Math.max(0, Number(points) || 0);
       const localAllTimePoints = Math.max(0, Number(allTimePoints) || 0);

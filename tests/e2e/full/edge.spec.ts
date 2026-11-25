@@ -65,3 +65,31 @@ test('repeated wrong passwords are rate limited', async ({ request }) => {
   }
   expect(last).toBe(429);
 });
+
+test('an empty room cannot be taken over, and only the creator is admin', async ({ browser }) => {
+  const a = await newUser(browser, 'Room Creator');
+  const code = await createRoom(a.page, 'Takeover Co', 'Room Creator');
+  const b = await newUser(browser, 'Late Joiner');
+
+  // Creator leaves: the room is now empty.
+  const left = await a.page.request.post('api/account', { data: { action: 'leave-room', roomCode: code } });
+  expect(left.ok()).toBeTruthy();
+
+  // A stranger who knows the code joins the empty room: they must NOT become admin.
+  const joined = await b.page.request.post('api/company', {
+    data: { action: 'sync-member', roomCode: code, memberName: 'Late Joiner', color: '#fff' },
+  });
+  expect(joined.status()).toBe(201);
+  const roster = await (await b.page.request.get(`api/company?roomCode=${code}`)).json();
+  expect(roster.members.find((m: { name: string }) => m.name === 'Late Joiner').role).toBe('employee');
+
+  // The creator coming back is admin again.
+  await a.page.request.post('api/company', { data: { action: 'sync-member', roomCode: code, memberName: 'Room Creator', color: '#fff' } });
+  const roster2 = await (await a.page.request.get(`api/company?roomCode=${code}`)).json();
+  expect(roster2.members.find((m: { name: string }) => m.name === 'Room Creator').role).toBe('admin');
+
+  // The stranger cannot grant themselves admin either.
+  const promote = await b.page.request.post('api/company', { data: { action: 'set-role', roomCode: code, memberName: 'Late Joiner', role: 'admin' } });
+  expect(promote.status()).toBe(403);
+  await a.ctx.close(); await b.ctx.close();
+});
