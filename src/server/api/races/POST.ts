@@ -3,6 +3,7 @@ import { and, eq, sql } from 'drizzle-orm';
 import { getAuth } from '@/lib/auth/auth';
 import { db } from '../../db/client.js';
 import { isLobbyOverdue } from '../../race-lobby';
+import { MAX_PLAUSIBLE_WPM } from '../../../lib/typing-math';
 import { companyMembers, typingRaceParticipants, typingRaces } from '../../db/schema.js';
 
 // Real racing games cap lobby size and treat it as a hard server-side rule,
@@ -162,7 +163,7 @@ export default async function handler(req: Request, res: Response) {
       if (!participant[0]) return res.status(403).json({ error: 'Join the race first' });
       const safeProgress = Math.max(0, Math.min(100, Number(progress) || 0));
       const safeAccuracy = Math.max(0, Math.min(100, Number(accuracy) || 0));
-      const safeWpm = Math.max(0, Math.min(500, Number(wpm) || 0));
+      const safeWpm = Math.max(0, Math.min(MAX_PLAUSIBLE_WPM, Number(wpm) || 0));
       const didFinish = Boolean(finished) && safeProgress === 100;
       await db.update(typingRaceParticipants).set({ progress: didFinish ? 100 : safeProgress, accuracy: safeAccuracy, wpm: safeWpm, finishedAt: didFinish ? (participant[0].finishedAt ?? new Date()) : participant[0].finishedAt, updatedAt: new Date() }).where(eq(typingRaceParticipants.id, participant[0].id));
       const participants = await db.select().from(typingRaceParticipants).where(eq(typingRaceParticipants.raceId, raceId));

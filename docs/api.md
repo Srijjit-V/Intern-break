@@ -43,5 +43,5 @@ Every action requires membership of `roomCode`, otherwise `403 {"error":"You are
 | POST | `/api/races` | `{action:"start", roomCode, passage, displayName, color}` | `201` new lobby, or the existing lobby with you added. `409` if full (5) or a race is underway. |
 | POST | `/api/races` | `{action:"join", roomCode, raceId, displayName, color}` | `{ok, participants}`; `409` if started or full |
 | POST | `/api/races` | `{action:"ready", roomCode, raceId}` | When everyone is ready the race moves to `countdown` with `startsAt` 3 s ahead |
-| POST | `/api/races` | `{action:"progress", roomCode, raceId, progress, accuracy, wpm, finished?}` | `409` unless active. Values are clamped (0 to 100, wpm 0 to 500). |
+| POST | `/api/races` | `{action:"progress", roomCode, raceId, progress, accuracy, wpm, finished?}` | `409` unless active. Values are clamped (0 to 100, wpm 0 to 350). |
 | POST | `/api/races` | `{action:"leave", roomCode, raceId}` | Leaver is marked DNF (`progress:-1`); the race closes when nobody is left racing. |

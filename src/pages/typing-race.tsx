@@ -1,3 +1,4 @@
+import { accuracyPct, correctCharCount, rankRacers, wpmFromChars } from '@/lib/typing-math';
 import {
   useEffect,
   useId,
@@ -127,11 +128,6 @@ function getTypedWords(value: string) {
 function formatRaceTime(seconds: number) {
   if (!seconds || seconds <= 0) return '—';
   return `${seconds.toFixed(2)}s`;
-}
-
-function calculateWpm(wordsTyped: number, seconds: number) {
-  if (!seconds || seconds <= 0) return 0;
-  return Math.round((wordsTyped / seconds) * 60);
 }
 
 function getOrdinalRank(position: number) {
@@ -659,7 +655,8 @@ export default function TypingRacePage() {
   }, [typed, completedWords, words]);
 
   const correctWords = Math.max(0, completedWords - currentIncorrectWords);
-  const accuracy = completedWords ? Math.round((correctWords / completedWords) * 100) : 100;
+  const accuracy = accuracyPct(correctWords, completedWords);
+  const correctChars = correctCharCount(getTypedWords(typed), words, completedWords);
   // accuracyMultiplier is kept for display-only use (accuracy badge) — NOT applied to WPM
   const charProgress = Math.min(100, Math.round((correctWords / words.length) * 100));
   const wordsLeft = Math.max(0, words.length - completedWords);
@@ -755,10 +752,10 @@ export default function TypingRacePage() {
               ? Number.POSITIVE_INFINITY
               : opponentTargetTimes[racer.name] ?? 45;
         const racerWpm = racer.isUser
-          ? calculateWpm(correctWords, time)
+          ? wpmFromChars(correctChars, time)
           : liveRace
             ? Number(liveParticipant?.wpm ?? 0)
-            : calculateWpm(words.length, time);
+            : wpmFromChars(passage.length, time);
         const racerAccuracy = racer.isUser ? accuracy : Number(liveParticipant?.accuracy ?? 100);
         return { ...racer, time, wpm: racerWpm, accuracy: racerAccuracy, dnf: isDnf };
       });
@@ -781,23 +778,9 @@ export default function TypingRacePage() {
 
     const allRows = [...activeRows, ...dnfRows];
 
-    // Sort: finished (finite time) first by finish time, then unfinished by WPM desc, DNF last
-    return allRows.sort((a, b) => {
-      if (a.dnf && !b.dnf) return 1;
-      if (!a.dnf && b.dnf) return -1;
-      if (a.dnf && b.dnf) return 0;
-      const aFinished = isFinite(a.time) && a.time > 0;
-      const bFinished = isFinite(b.time) && b.time > 0;
-      if (aFinished && bFinished) return a.time - b.time; // faster finish = higher rank
-      if (aFinished && !bFinished) return -1;
-      if (!aFinished && bFinished) return 1;
-      // Both still racing — sort by WPM desc, then by progress desc as tiebreaker
-      if (b.wpm !== a.wpm) return b.wpm - a.wpm;
-      const aProgress = liveParticipants.find((p) => p.displayName === a.name)?.progress ?? 0;
-      const bProgress = liveParticipants.find((p) => p.displayName === b.name)?.progress ?? 0;
-      return bProgress - aProgress;
-    });
-  }, [account?.id, accuracy, correctWords, liveParticipants, liveRace, opponentTargetTimes, raceElapsed, userFinishTime, visibleRacers, words.length]);
+    // Finishers by time (ties: WPM, accuracy, name), then unfinished by progress and WPM, DNF last.
+    return rankRacers(allRows.map((row) => ({ ...row, progress: liveParticipants.find((p) => p.displayName === row.name)?.progress ?? 0 })));
+  }, [account?.id, accuracy, correctChars, correctWords, passage.length, liveParticipants, liveRace, opponentTargetTimes, raceElapsed, userFinishTime, visibleRacers, words.length]);
 
   const userLeaderboardRow = leaderboardRows.find((racer) => racer.isUser);
   const userRankIndex = leaderboardRows.findIndex((racer) => racer.isUser);
@@ -1042,7 +1025,7 @@ export default function TypingRacePage() {
     setScreen('garage');
   }
 
-  function finishRace(finalCompletedWords = completedWords, finalIncorrectWordsArg = currentIncorrectWords) {
+  function finishRace(finalCompletedWords = completedWords, finalIncorrectWordsArg = currentIncorrectWords, finalTyped = typed) {
     if (finished || finalCompletedWords < words.length) return;
     const finishTime = startedAt ? (Date.now() - startedAt) / 1000 : raceElapsed;
     const finalCorrectWords = Math.max(0, finalCompletedWords - finalIncorrectWordsArg);
@@ -1051,8 +1034,8 @@ export default function TypingRacePage() {
     setRaceElapsed(finishTime);
     setFinished(true);
     if (liveRace && user?.roomCode && isJoinedLiveRace) {
-      // WPM = correct words / minutes — no second accuracy discount
-      const finalWpm = calculateWpm(finalCorrectWords, finishTime);
+      // WPM = correct characters / 5 per minute, no second accuracy discount
+      const finalWpm = wpmFromChars(correctCharCount(getTypedWords(finalTyped), words, finalCompletedWords), finishTime);
       void fetch('/api/races', {
         method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'progress', roomCode: user.roomCode, raceId: liveRace.id, progress: 100, accuracy: finalAccuracy, wpm: finalWpm, finished: true }),
@@ -1134,13 +1117,13 @@ export default function TypingRacePage() {
         // WPM = correct words / minutes — no second accuracy discount
         void fetch('/api/races', {
           method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'progress', roomCode: user.roomCode, raceId: liveRace.id, progress: Math.min(99, Math.round((correctCompletedWords / words.length) * 100)), accuracy: nextCompletedWords ? Math.round((correctCompletedWords / nextCompletedWords) * 100) : 100, wpm: calculateWpm(correctCompletedWords, Math.max(0.01, raceElapsed)), finished: false }),
+          body: JSON.stringify({ action: 'progress', roomCode: user.roomCode, raceId: liveRace.id, progress: Math.min(99, Math.round((correctCompletedWords / words.length) * 100)), accuracy: nextCompletedWords ? Math.round((correctCompletedWords / nextCompletedWords) * 100) : 100, wpm: wpmFromChars(correctCharCount(nextTypedWords, words, nextCompletedWords), Math.max(0.01, raceElapsed)), finished: false }),
         });
       }
     }
 
     if (nextCompletedWords >= words.length) {
-      finishRace(nextCompletedWords, nextIncorrectWords);
+      finishRace(nextCompletedWords, nextIncorrectWords, nextValue);
     }
   }
 
@@ -1365,7 +1348,7 @@ export default function TypingRacePage() {
 
                     <span className="flex items-center gap-1.5">
                       <Gauge size={16} className="text-lime-200" />
-                      {calculateWpm(correctWords, userFinishTime ?? raceElapsed)} WPM
+                      {wpmFromChars(correctChars, userFinishTime ?? raceElapsed)} WPM
                     </span>
 
                     <span className="rounded-full bg-black/25 px-2 py-1 text-[11px] font-bold">

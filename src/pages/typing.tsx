@@ -1,3 +1,4 @@
+import { wpmFromChars } from '@/lib/typing-math';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Helmet } from '@dr.pogodin/react-helmet';
 import { motion, AnimatePresence } from 'motion/react';
@@ -115,6 +116,7 @@ export default function TypingPage() {
   const [result, setResult] = useState<RunResult | null>(null);
   const startedAtRef = useRef<number | null>(null);
   const endedRef = useRef(false);
+  const correctCharsRef = useRef(0);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const wordListRef = useRef<HTMLDivElement>(null);
@@ -143,7 +145,8 @@ export default function TypingPage() {
     const totalTyped = correct + incorrect;
     const accuracy = totalTyped > 0 ? Math.round((correct / totalTyped) * 100) : 0;
     const elapsedMinutes = Math.max((Date.now() - (startedAtRef.current ?? Date.now())) / 60000, 1 / 60);
-    const wpm = Math.round(correct / elapsedMinutes);
+    // Standard WPM: correct characters / 5 per minute (see src/lib/typing-math.ts).
+    const wpm = wpmFromChars(correctCharsRef.current, elapsedMinutes * 60);
     const { isNewBest } = saveTypingScore(wpm);
     setResult({ wpm, accuracy, correct, incorrect, isNewBest });
     setGameState('done');
@@ -203,6 +206,7 @@ export default function TypingPage() {
     setResult(null);
     startedAtRef.current = null;
     endedRef.current = false;
+    correctCharsRef.current = 0;
     setGameState('countdown');
   }
 
@@ -216,6 +220,7 @@ export default function TypingPage() {
       const expected = words[currentWordIdx];
       const isCorrect = typed === expected;
 
+      if (isCorrect) correctCharsRef.current += expected.length + 1;
       const newCorrect = correctWords + (isCorrect ? 1 : 0);
       const newIncorrect = incorrectWords + (isCorrect ? 0 : 1);
 
