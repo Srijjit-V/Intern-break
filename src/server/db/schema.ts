@@ -74,6 +74,8 @@ export const typingRaceParticipants = mysqlTable('typing_race_participants', {
 export const rewardRedemptions = mysqlTable('reward_redemptions', {
   id: int('id').primaryKey().autoincrement(),
   roomCode: varchar('room_code', { length: 64 }).notNull(),
+  // Quotas key on the account, not the display name (which a member can change). NULL on rows from before this column.
+  accountId: varchar('account_id', { length: 36 }),
   memberName: varchar('member_name', { length: 255 }).notNull(),
   rewardName: varchar('reward_name', { length: 255 }).notNull(),
   points: int('points').notNull(),

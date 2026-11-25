@@ -1,0 +1,1 @@
+ALTER TABLE `reward_redemptions` ADD `account_id` varchar(36);

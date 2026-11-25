@@ -71,7 +71,9 @@ export default async function handler(req: Request, res: Response) {
         console.warn(JSON.stringify({ event: 'earn.clamped', accountId: session.user.id, roomCode, requested: { points: requestedPoints, allTime: requestedAllTime, carryover: requestedCarryover } }));
       }
       const logRows = [
-        { kind: 'points', amount: earnedPoints.gained },
+        // All-time and current points rise together, so they spend one budget: whichever gained more is debited.
+        // Without this, repeated all-time-only syncs would each get a fresh allowance.
+        { kind: 'points', amount: Math.max(earnedPoints.gained, earnedAllTime.gained) },
         { kind: 'carryover', amount: earnedCarryover.gained },
       ].filter((r) => r.amount > 0).map((r) => ({ accountId: session.user.id, roomCode, ...r }));
       if (logRows.length) await db.insert(earnLog).values(logRows);
@@ -153,7 +155,7 @@ export default async function handler(req: Request, res: Response) {
       if (Number(points) !== cost) return res.status(400).json({ error: 'Price mismatch' });
       // Rewards are physical and an admin fulfils them: cap how many a member can have open or request per day.
       const redeemed = await db.select({ status: rewardRedemptions.status, redeemedAt: rewardRedemptions.redeemedAt }).from(rewardRedemptions)
-        .where(and(eq(rewardRedemptions.roomCode, roomCode), eq(rewardRedemptions.memberName, member[0].name)));
+        .where(and(eq(rewardRedemptions.roomCode, roomCode), eq(rewardRedemptions.accountId, session.user.id)));
       const pending = redeemed.filter((r) => r.status === 'pending_fulfillment').length;
       const lastDay = redeemed.filter((r) => new Date(r.redeemedAt).getTime() > Date.now() - 86_400_000).length;
       if (pending >= 3 || lastDay >= 5) return res.status(429).json({ error: 'Redemption limit reached. Wait for your open rewards to be fulfilled.' });
@@ -162,7 +164,7 @@ export default async function handler(req: Request, res: Response) {
         .set({ carryoverPoints: sql`${companyMembers.carryoverPoints} - ${cost}` })
         .where(and(eq(companyMembers.id, member[0].id), sql`${companyMembers.carryoverPoints} >= ${cost}`));
       if (Number(debit[0].affectedRows) !== 1) return res.status(400).json({ error: 'Not enough points' });
-      const result = await db.insert(rewardRedemptions).values({ roomCode, memberName: member[0].name, rewardName, points: cost });
+      const result = await db.insert(rewardRedemptions).values({ roomCode, accountId: session.user.id, memberName: member[0].name, rewardName, points: cost });
       return res.status(201).json({ ok: true, redemptionId: Number(result[0].insertId) });
     }
 

@@ -120,6 +120,12 @@ test('forged points are capped, prices come from the server, and redemptions are
   expect(again.points).toBe(first.points);
   expect(again.carryoverPoints).toBe(first.carryoverPoints);
 
+  // All-time-only syncs spend the same budget: repeating them cannot climb past the cap.
+  for (let i = 0; i < 5; i++) {
+    await u.page.request.post('api/company', { data: { action: 'sync-member', roomCode: code, memberName: 'Cheat Tester', color: '#fff', points: 0, allTimePoints: 999_999_999, carryoverPoints: 0 } });
+  }
+  expect((await me()).allTimePoints).toBeLessThanOrEqual(150);
+
   // A client cannot set its own price or invent a reward.
   const cheap = await u.page.request.post('api/company', { data: { action: 'redeem', roomCode: code, memberName: 'Cheat Tester', rewardName: 'Cozy Hoodie', points: 1 } });
   expect(cheap.status()).toBe(400);

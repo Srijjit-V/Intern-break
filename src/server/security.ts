@@ -106,7 +106,8 @@ interface LimiterOptions {
   now?: () => number;
 }
 
-const DEFAULT_MAX_KEYS = 10_000;
+// ~50k keys is a few MB. Per-IP limiters run first, so one address can only ever allocate a handful.
+const DEFAULT_MAX_KEYS = 50_000;
 
 export function createRateLimiter({ windowMs, max, key, skip, maxKeys = DEFAULT_MAX_KEYS, now = Date.now }: LimiterOptions): RequestHandler {
   const hits = new Map<string, { count: number; resetAt: number }>();
