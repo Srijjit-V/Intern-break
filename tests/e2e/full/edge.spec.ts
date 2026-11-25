@@ -138,3 +138,15 @@ test('forged points are capped, prices come from the server, and redemptions are
   expect((await redeem()).status()).toBe(429);
   await u.ctx.close();
 });
+
+test("a redemption cannot spend someone else's balance by naming them", async ({ browser }) => {
+  const a = await newUser(browser, 'Rich Rita');
+  const code = await createRoom(a.page, 'Name Co', 'Rich Rita');
+  await a.page.request.post('api/company', { data: { action: 'sync-member', roomCode: code, memberName: 'Rich Rita', color: '#fff', points: 100, allTimePoints: 100, carryoverPoints: 300 } });
+  const b = await newUser(browser, 'Thief Tom'); // never joined the room
+  const res = await b.page.request.post('api/company', { data: { action: 'redeem', roomCode: code, memberName: 'Rich Rita', rewardName: 'Team Lanyard', points: 75 } });
+  expect([403, 404]).toContain(res.status());
+  const roster = await (await a.page.request.get(`api/company?roomCode=${code}`)).json();
+  expect(roster.members.find((m: { name: string }) => m.name === 'Rich Rita').carryoverPoints).toBe(300);
+  await a.ctx.close(); await b.ctx.close();
+});

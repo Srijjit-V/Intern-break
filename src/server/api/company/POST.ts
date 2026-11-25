@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { and, desc, eq, gte, sql } from 'drizzle-orm';
+import { and, desc, eq, gte, isNull, or, sql } from 'drizzle-orm';
 import { db } from '../../db/client.js';
 import { companyMembers, companyRooms, earnLog, rewardRedemptions } from '../../db/schema.js';
 import { capsFor, clampEarn } from '../../earn-budget';
@@ -140,14 +140,11 @@ export default async function handler(req: Request, res: Response) {
     }
 
     if (action === 'redeem') {
-      // Use accountId as the primary lookup key — memberName is mutable and
-      // not unique. Fall back to name only for legacy rows without an accountId.
-      const memberByAccount = await db.select().from(companyMembers)
+      // Only the caller's own account row can be debited. (A name-based fallback would let someone
+      // spend another member's balance by sending their display name.)
+      const member = await db.select().from(companyMembers)
         .where(and(eq(companyMembers.roomCode, roomCode), eq(companyMembers.accountId, session.user.id)))
         .orderBy(desc(companyMembers.updatedAt)).limit(1);
-      const member = memberByAccount[0]
-        ? memberByAccount
-        : await db.select().from(companyMembers).where(and(eq(companyMembers.roomCode, roomCode), eq(companyMembers.name, memberName))).orderBy(desc(companyMembers.updatedAt)).limit(1);
       if (!member[0]) return res.status(404).json({ error: 'Member not found' });
       // The price comes from the server's catalog; whatever the client sends is only checked against it.
       const cost = rewardPrice(rewardName);
@@ -155,7 +152,11 @@ export default async function handler(req: Request, res: Response) {
       if (Number(points) !== cost) return res.status(400).json({ error: 'Price mismatch' });
       // Rewards are physical and an admin fulfils them: cap how many a member can have open or request per day.
       const redeemed = await db.select({ status: rewardRedemptions.status, redeemedAt: rewardRedemptions.redeemedAt }).from(rewardRedemptions)
-        .where(and(eq(rewardRedemptions.roomCode, roomCode), eq(rewardRedemptions.accountId, session.user.id)));
+        .where(and(eq(rewardRedemptions.roomCode, roomCode), or(
+          eq(rewardRedemptions.accountId, session.user.id),
+          // Rows from before account_id existed count too (also backfilled by migration 0004).
+          and(isNull(rewardRedemptions.accountId), eq(rewardRedemptions.memberName, member[0].name)),
+        )));
       const pending = redeemed.filter((r) => r.status === 'pending_fulfillment').length;
       const lastDay = redeemed.filter((r) => new Date(r.redeemedAt).getTime() > Date.now() - 86_400_000).length;
       if (pending >= 3 || lastDay >= 5) return res.status(429).json({ error: 'Redemption limit reached. Wait for your open rewards to be fulfilled.' });
