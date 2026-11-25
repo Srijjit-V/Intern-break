@@ -780,7 +780,7 @@ export default function TypingRacePage() {
 
     // Finishers by time (ties: WPM, accuracy, name), then unfinished by progress and WPM, DNF last.
     return rankRacers(allRows.map((row) => ({ ...row, progress: liveParticipants.find((p) => p.displayName === row.name)?.progress ?? 0 })));
-  }, [account?.id, accuracy, correctChars, correctWords, passage.length, liveParticipants, liveRace, opponentTargetTimes, raceElapsed, userFinishTime, visibleRacers, words.length]);
+  }, [account?.id, accuracy, correctChars, passage.length, liveParticipants, liveRace, opponentTargetTimes, raceElapsed, userFinishTime, visibleRacers]);
 
   const userLeaderboardRow = leaderboardRows.find((racer) => racer.isUser);
   const userRankIndex = leaderboardRows.findIndex((racer) => racer.isUser);

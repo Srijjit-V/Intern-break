@@ -1,0 +1,1 @@
+{"clients":5,"seconds":25,"pollRequests":100,"requestsPerSecond":4,"latencyMs":{"p50":11.2,"p95":19.4,"max":25.5},"progressStalenessMs":{"samples":17,"p50":123,"p95":427,"max":427}}

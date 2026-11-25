@@ -1,3 +1,4 @@
+import { triviaScore } from '@/lib/game-math';
 import { trivia } from 'virtual:content';
 import { Helmet } from '@dr.pogodin/react-helmet';
 import { useEffect, useRef, useState, useCallback } from 'react';
@@ -37,14 +38,7 @@ function pickQuestions(): Question[] {
   return shuffle([...trivia]).slice(0, TOTAL_QUESTIONS);
 }
 
-function calcScore(correct: number, avgTimeMs: number): number {
-  // Base: 100 pts per correct answer, speed bonus up to 50 pts per question
-  const base = correct * 100;
-  const speedBonus = correct > 0
-    ? Math.round(correct * Math.max(0, 50 - (avgTimeMs / 1000) * 5))
-    : 0;
-  return base + speedBonus;
-}
+const calcScore = triviaScore;
 
 // ── Countdown overlay ─────────────────────────────────────────────────────────
 function CountdownOverlay({ onDone }: { onDone: () => void }) {

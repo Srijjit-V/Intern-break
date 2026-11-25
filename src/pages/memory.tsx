@@ -1,3 +1,4 @@
+import { memoryScore } from '@/lib/game-math';
 import { Helmet } from '@dr.pogodin/react-helmet';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Trophy, RotateCcw, Timer } from 'lucide-react';
@@ -59,13 +60,7 @@ function saveMemoryScore(score: number, difficulty: Difficulty) {
   recordMemoryScore(score);
 }
 
-function calcScore(pairs: number, moves: number, timeMs: number, difficulty: Difficulty): number {
-  const base = pairs * 100;
-  const movePenalty = Math.max(0, (moves - pairs) * 5);
-  const timePenalty = Math.floor(timeMs / 1000) * 2;
-  const diffBonus = difficulty === 'Hard' ? 200 : difficulty === 'Medium' ? 100 : 0;
-  return Math.max(0, base - movePenalty - timePenalty + diffBonus);
-}
+const calcScore = memoryScore;
 function MemoryCard({ card, onClick, disabled }: { card: Card; onClick: () => void; disabled: boolean }) {
   return (
     <button

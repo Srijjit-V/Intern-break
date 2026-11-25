@@ -1,6 +1,7 @@
 // ─── IBS Store ────────────────────────────────────────────────────────────────
 // All localStorage helpers, types, and pure-logic utilities for the portal.
 
+import { pointsToCurrency } from './game-math';
 import { DEFAULT_PINNED_GAMES, type GameId } from '@/lib/game-registry';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -324,8 +325,7 @@ export function spendDiamonds(roomCode: string, memberName: string, amount: numb
 
 /** Award gold + diamonds to a user after a game win. */
 export function awardGamePoints(user: IBSUser, points: number): IBSUser {
-  const goldGain = Math.max(1, Math.round(points * 0.5));
-  const diamondGain = Math.max(1, Math.round(points * 0.25));
+  const { gold: goldGain, diamonds: diamondGain } = pointsToCurrency(points);
   const updated: IBSUser = {
     ...user,
     points: Number(user.points ?? 0) + points,
@@ -354,8 +354,7 @@ export function awardGamePoints(user: IBSUser, points: number): IBSUser {
 export function awardChallengePoints(roomCode: string, memberName: string, points: number): void {
   const room = getRoom(roomCode);
   if (!room) return;
-  const goldGain = Math.max(1, Math.round(points * 0.5));
-  const diamondGain = Math.max(1, Math.round(points * 0.25));
+  const { gold: goldGain, diamonds: diamondGain } = pointsToCurrency(points);
   const members = (room.members ?? []).map((m) => {
     if (m.name !== memberName) return m;
     return {
