@@ -66,7 +66,7 @@ export async function render(url: string): Promise<RenderResult> {
   const html = renderToString(<StrictMode>
       <HelmetProvider context={helmetContext}>
         <QueryClientProvider client={queryClient}>
-          <StaticRouterProvider router={router} context={context} />
+          <StaticRouterProvider router={router} context={context} hydrate={false} />
         </QueryClientProvider>
       </HelmetProvider>
     </StrictMode>);

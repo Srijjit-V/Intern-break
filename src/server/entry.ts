@@ -19,6 +19,7 @@ import races_post_10 from "./api/races/POST";
 import { seoRoutes } from "../lib/seo-routes";
 import { isSystemHost } from "./seo-host";
 import { llmsTxtHandler } from "./llms-txt";
+import { apiRateLimiter, applySecurity, authRateLimiters, signupRateLimiter } from "./security";
 
 export interface SsrRenderResult {
 	html: string;
@@ -38,16 +39,17 @@ export function renderSsrDocument(
 
 const app = express();
 
-// Honour x-forwarded-* from the load balancer so req.protocol/req.hostname
-// reflect the public-facing values. Express-maintained parsing respects the
-// existing trust-proxy config; direct header reads would let a client spoof
-// the sitemap origin in robots.txt.
-app.set("trust proxy", true);
+// Headers, CSP, same-origin guard for API writes, and trust-proxy (opt-in via TRUST_PROXY).
+applySecurity(app);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // <api-registrations>
+app.use("/api", apiRateLimiter());
+app.post("/api/auth/sign-in/:method", ...authRateLimiters());
+app.post("/api/auth/sign-up/:method", signupRateLimiter());
+app.post("/api/auth/change-password", ...authRateLimiters());
 app.get("/api/account", account_get_0);
 app.post("/api/account", account_post_1);
 app.get("/api/auth/:action", auth_action_get_2);

@@ -114,6 +114,9 @@ jobs:
       BETTER_AUTH_SECRET: ci-secret-ci-secret-ci-secret-ci-secret
       BETTER_AUTH_URL: http://localhost:3000
       PORT: "3000"
+      # The e2e suite creates many users from one IP.
+      RATE_LIMIT_SIGNUP_MAX: "1000"
+      RATE_LIMIT_API_MAX: "100000"
     steps:
       - uses: actions/checkout@v7
         with:
