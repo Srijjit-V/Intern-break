@@ -126,6 +126,13 @@ test('forged points are capped, prices come from the server, and redemptions are
   }
   expect((await me()).allTimePoints).toBeLessThanOrEqual(150);
 
+  // Impossible high scores in the profile never reach the leaderboard data.
+  await u.page.request.post('api/company', { data: { action: 'sync-member', roomCode: code, memberName: 'Cheat Tester', color: '#fff', profile: { triviaHighScore: 999_999, snakeHighScore: 55, typingHighScore: 9000 } } });
+  const prof = (await me()).profile ?? {};
+  expect(prof.triviaHighScore ?? 0).toBeLessThanOrEqual(1500); // the forged 999999 was dropped, the stored value stays
+  expect(prof.typingHighScore ?? 0).toBeLessThanOrEqual(350);
+  expect(prof.snakeHighScore).toBe(55); // a possible score is kept
+
   // A client cannot set its own price or invent a reward.
   const cheap = await u.page.request.post('api/company', { data: { action: 'redeem', roomCode: code, memberName: 'Cheat Tester', rewardName: 'Cozy Hoodie', points: 1 } });
   expect(cheap.status()).toBe(400);

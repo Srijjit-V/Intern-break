@@ -4,6 +4,7 @@ import { db } from '../../db/client.js';
 import { companyMembers, companyRooms, earnLog, rewardRedemptions } from '../../db/schema.js';
 import { capsFor, clampEarn } from '../../earn-budget';
 import { rewardPrice } from '../../reward-catalog';
+import { sanitizeProfile } from '../../score-caps';
 import { getAuth } from '@/lib/auth/auth';
 
 export default async function handler(req: Request, res: Response) {
@@ -27,6 +28,8 @@ export default async function handler(req: Request, res: Response) {
       const [roomRow] = await db.select().from(companyRooms).where(eq(companyRooms.roomCode, roomCode)).limit(1);
       const newMemberRole = roomRow?.createdByAccountId === session.user.id ? 'admin' : 'employee';
 
+      // High scores in the profile feed the leaderboard: impossible ones are dropped.
+      const safeProfile = sanitizeProfile(profile);
       const requestedPoints = Math.max(0, Number(points) || 0);
       const requestedAllTime = Math.max(0, Number(allTimePoints) || 0);
       const requestedCarryover = Math.max(0, Number(carryoverPoints) || 0);
@@ -88,7 +91,7 @@ export default async function handler(req: Request, res: Response) {
           points: Math.max(legacyMember.points, localPoints),
           allTimePoints: Math.max(legacyMember.allTimePoints, localAllTimePoints),
           carryoverPoints: Math.max(legacyMember.carryoverPoints, localCarryoverPoints),
-          profile: profile && typeof profile === 'object' ? profile : legacyMember.profile,
+          profile: safeProfile ?? legacyMember.profile,
           updatedAt: new Date(),
         }).where(eq(companyMembers.id, legacyMember.id));
         const duplicateLegacyIds = legacyMembers.filter((member) => !member.accountId && member.id !== legacyMember.id).map((member) => member.id);
@@ -104,7 +107,7 @@ export default async function handler(req: Request, res: Response) {
             points: localPoints,
             allTimePoints: localAllTimePoints,
             carryoverPoints: localCarryoverPoints,
-            profile: profile && typeof profile === 'object' ? profile : null,
+            profile: safeProfile,
           })
           .onDuplicateKeyUpdate({
             set: {
@@ -113,8 +116,8 @@ export default async function handler(req: Request, res: Response) {
               points: sql`GREATEST(${companyMembers.points}, ${localPoints})`,
               allTimePoints: sql`GREATEST(${companyMembers.allTimePoints}, ${localAllTimePoints})`,
               carryoverPoints: sql`GREATEST(${companyMembers.carryoverPoints}, ${localCarryoverPoints})`,
-              profile: profile && typeof profile === 'object'
-                ? sql`JSON_MERGE_PATCH(COALESCE(${companyMembers.profile}, JSON_OBJECT()), ${JSON.stringify(profile)})`
+              profile: safeProfile
+                ? sql`JSON_MERGE_PATCH(COALESCE(${companyMembers.profile}, JSON_OBJECT()), ${JSON.stringify(safeProfile)})`
                 : sql`${companyMembers.profile}`,
               updatedAt: new Date(),
             },
