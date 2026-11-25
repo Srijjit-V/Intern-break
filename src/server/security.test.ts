@@ -132,12 +132,24 @@ describe('rate limiter', () => {
     expect(await hit()).toBe(200);
   });
 
-  it('stays bounded under a flood of distinct keys', async () => {
-    const limiter = createRateLimiter({ windowMs: 60_000, max: 5, key: (req) => String(req.headers['x-key']) });
+  it('fails closed at capacity: a flood of new keys cannot evict a live counter', async () => {
+    const limiter = createRateLimiter({ windowMs: 60_000, max: 1, maxKeys: 2, key: (req) => String(req.headers['x-key']) });
     const base = await start((app) => app.post('/limited', limiter, (_req, res) => res.json({ ok: true })));
-    // A 400-character key must be truncated, not stored whole.
-    const res = await fetch(`${base}/limited`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-key': 'k'.repeat(400) }, body: '{}' });
-    expect(res.status).toBe(200);
+    const hit = (k: string) => fetch(`${base}/limited`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-key': k }, body: '{}' }).then((r) => r.status);
+    expect(await hit('attacker')).toBe(200);
+    expect(await hit('attacker')).toBe(429); // attacker is at their limit
+    expect(await hit('other-1')).toBe(200); // table now full (2 keys)
+    expect(await hit('flood-1')).toBe(429); // new key refused, nobody evicted
+    expect(await hit('attacker')).toBe(429); // attacker's counter survived the flood
+  });
+
+  it('skips the limiter when the skip predicate says so', async () => {
+    const limiter = createRateLimiter({ windowMs: 60_000, max: 1, key: () => 'same', skip: (req) => !req.headers['x-key'] });
+    const base = await start((app) => app.post('/limited', limiter, (_req, res) => res.json({ ok: true })));
+    const hit = (h: Record<string, string>) => fetch(`${base}/limited`, { method: 'POST', headers: { 'content-type': 'application/json', ...h }, body: '{}' }).then((r) => r.status);
+    expect([await hit({}), await hit({}), await hit({})]).toEqual([200, 200, 200]);
+    expect(await hit({ 'x-key': 'a' })).toBe(200);
+    expect(await hit({ 'x-key': 'a' })).toBe(429);
   });
 
   it('counts different keys separately', async () => {

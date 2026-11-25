@@ -1,7 +1,9 @@
 import type { Request, Response } from 'express';
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, gte, sql } from 'drizzle-orm';
 import { db } from '../../db/client.js';
-import { companyMembers, companyRooms, rewardRedemptions } from '../../db/schema.js';
+import { companyMembers, companyRooms, earnLog, rewardRedemptions } from '../../db/schema.js';
+import { capsFor, clampEarn } from '../../earn-budget';
+import { rewardPrice } from '../../reward-catalog';
 import { getAuth } from '@/lib/auth/auth';
 
 export default async function handler(req: Request, res: Response) {
@@ -25,9 +27,9 @@ export default async function handler(req: Request, res: Response) {
       const [roomRow] = await db.select().from(companyRooms).where(eq(companyRooms.roomCode, roomCode)).limit(1);
       const newMemberRole = roomRow?.createdByAccountId === session.user.id ? 'admin' : 'employee';
 
-      const localPoints = Math.max(0, Number(points) || 0);
-      const localAllTimePoints = Math.max(0, Number(allTimePoints) || 0);
-      const localCarryoverPoints = Math.max(0, Number(carryoverPoints) || 0);
+      const requestedPoints = Math.max(0, Number(points) || 0);
+      const requestedAllTime = Math.max(0, Number(allTimePoints) || 0);
+      const requestedCarryover = Math.max(0, Number(carryoverPoints) || 0);
 
       // Atomic upsert keyed on the (roomCode, accountId) unique constraint.
       // This is the fix for the "joining creates two profiles" bug: the old
@@ -46,6 +48,33 @@ export default async function handler(req: Request, res: Response) {
         ? await db.select().from(companyMembers).where(and(eq(companyMembers.roomCode, roomCode), eq(companyMembers.name, memberName))).orderBy(desc(companyMembers.updatedAt))
         : [];
       const legacyMember = legacyMembers.find((member) => !member.accountId);
+
+      // Earn budget: totals may rise only so fast. The client's numbers are requests, not facts.
+      const current = existingMember[0] ?? legacyMember ?? { points: 0, allTimePoints: 0, carryoverPoints: 0 };
+      const now = Date.now();
+      const sumSince = async (kind: 'points' | 'carryover', ms: number) => {
+        const [row] = await db.select({ total: sql<number>`COALESCE(SUM(${earnLog.amount}), 0)` }).from(earnLog)
+          .where(and(eq(earnLog.accountId, session.user.id), eq(earnLog.kind, kind), gte(earnLog.createdAt, new Date(now - ms))));
+        return Number(row?.total ?? 0);
+      };
+      const [pointsHour, pointsDay, carryHour, carryDay] = await Promise.all([
+        sumSince('points', 3_600_000), sumSince('points', 86_400_000), sumSince('carryover', 3_600_000), sumSince('carryover', 86_400_000),
+      ]);
+      const pointsCaps = capsFor('points');
+      const earnedPoints = clampEarn({ current: current.points, requested: requestedPoints, hourUsed: pointsHour, dayUsed: pointsDay, caps: pointsCaps });
+      const earnedAllTime = clampEarn({ current: current.allTimePoints, requested: requestedAllTime, hourUsed: pointsHour, dayUsed: pointsDay, caps: pointsCaps });
+      const earnedCarryover = clampEarn({ current: current.carryoverPoints, requested: requestedCarryover, hourUsed: carryHour, dayUsed: carryDay, caps: capsFor('carryover') });
+      const localPoints = earnedPoints.value;
+      const localAllTimePoints = earnedAllTime.value;
+      const localCarryoverPoints = earnedCarryover.value;
+      if (earnedPoints.clamped || earnedAllTime.clamped || earnedCarryover.clamped) {
+        console.warn(JSON.stringify({ event: 'earn.clamped', accountId: session.user.id, roomCode, requested: { points: requestedPoints, allTime: requestedAllTime, carryover: requestedCarryover } }));
+      }
+      const logRows = [
+        { kind: 'points', amount: earnedPoints.gained },
+        { kind: 'carryover', amount: earnedCarryover.gained },
+      ].filter((r) => r.amount > 0).map((r) => ({ accountId: session.user.id, roomCode, ...r }));
+      if (logRows.length) await db.insert(earnLog).values(logRows);
 
       if (legacyMember) {
         await db.update(companyMembers).set({
@@ -118,8 +147,16 @@ export default async function handler(req: Request, res: Response) {
         ? memberByAccount
         : await db.select().from(companyMembers).where(and(eq(companyMembers.roomCode, roomCode), eq(companyMembers.name, memberName))).orderBy(desc(companyMembers.updatedAt)).limit(1);
       if (!member[0]) return res.status(404).json({ error: 'Member not found' });
-      const cost = Number(points);
-      if (!Number.isInteger(cost) || cost <= 0) return res.status(400).json({ error: 'points must be a positive integer' });
+      // The price comes from the server's catalog; whatever the client sends is only checked against it.
+      const cost = rewardPrice(rewardName);
+      if (cost === null) return res.status(400).json({ error: 'Unknown reward' });
+      if (Number(points) !== cost) return res.status(400).json({ error: 'Price mismatch' });
+      // Rewards are physical and an admin fulfils them: cap how many a member can have open or request per day.
+      const redeemed = await db.select({ status: rewardRedemptions.status, redeemedAt: rewardRedemptions.redeemedAt }).from(rewardRedemptions)
+        .where(and(eq(rewardRedemptions.roomCode, roomCode), eq(rewardRedemptions.memberName, member[0].name)));
+      const pending = redeemed.filter((r) => r.status === 'pending_fulfillment').length;
+      const lastDay = redeemed.filter((r) => new Date(r.redeemedAt).getTime() > Date.now() - 86_400_000).length;
+      if (pending >= 3 || lastDay >= 5) return res.status(429).json({ error: 'Redemption limit reached. Wait for your open rewards to be fulfilled.' });
       // Atomic conditional debit: two concurrent redeems cannot both spend the same balance.
       const debit = await db.update(companyMembers)
         .set({ carryoverPoints: sql`${companyMembers.carryoverPoints} - ${cost}` })
@@ -144,6 +181,11 @@ export default async function handler(req: Request, res: Response) {
         .orderBy(desc(companyMembers.updatedAt))
         .limit(1);
       if (!target[0]) return res.status(404).json({ error: 'Member not found' });
+      // The creator is the room's owner: nobody can demote them, so "creator is admin" stays true.
+      const [ownerRow] = await db.select({ createdBy: companyRooms.createdByAccountId }).from(companyRooms).where(eq(companyRooms.roomCode, roomCode)).limit(1);
+      if (ownerRow?.createdBy && target[0].accountId === ownerRow.createdBy && role !== 'admin') {
+        return res.status(403).json({ error: 'The room creator cannot be demoted' });
+      }
 
       await db.update(companyMembers).set({ role, updatedAt: new Date() }).where(eq(companyMembers.id, target[0].id));
       return res.json({ ok: true, member: { ...target[0], role } });

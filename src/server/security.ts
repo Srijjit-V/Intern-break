@@ -99,34 +99,42 @@ interface LimiterOptions {
   windowMs: number;
   max: number;
   key: (req: Request) => string;
+  /** Skip this limiter for requests where it does not apply (for example no email in the body). */
+  skip?: (req: Request) => boolean;
+  /** Hard cap on tracked keys. At the cap, unknown keys are refused instead of evicting live ones. */
+  maxKeys?: number;
   now?: () => number;
 }
 
-const MAX_TRACKED_KEYS = 10_000;
+const DEFAULT_MAX_KEYS = 10_000;
 
-export function createRateLimiter({ windowMs, max, key, now = Date.now }: LimiterOptions): RequestHandler {
+export function createRateLimiter({ windowMs, max, key, skip, maxKeys = DEFAULT_MAX_KEYS, now = Date.now }: LimiterOptions): RequestHandler {
   const hits = new Map<string, { count: number; resetAt: number }>();
+  let lastSweep = 0;
+  const tooMany = (res: Response, resetAt: number, t: number) => {
+    res.set('Retry-After', String(Math.max(1, Math.ceil((resetAt - t) / 1000))));
+    return res.status(429).json({ error: 'Too many requests. Try again later.' });
+  };
   return (req, res, next) => {
+    if (skip?.(req)) return next();
     const t = now();
     const k = key(req).slice(0, 300);
     let entry = hits.get(k);
     if (!entry || entry.resetAt <= t) {
+      if (!entry && hits.size >= maxKeys) {
+        // Full: drop expired entries (at most once a second), but never evict a live one. A flood of
+        // distinct keys must not be able to wash an attacker's own counter out of the table.
+        if (t - lastSweep >= 1000) {
+          lastSweep = t;
+          for (const [id, e] of hits) if (e.resetAt <= t) hits.delete(id);
+        }
+        if (hits.size >= maxKeys) return tooMany(res, t + windowMs, t);
+      }
       entry = { count: 0, resetAt: t + windowMs };
       hits.set(k, entry);
     }
     entry.count += 1;
-    if (hits.size > MAX_TRACKED_KEYS) {
-      for (const [id, e] of hits) if (e.resetAt <= t) hits.delete(id);
-      // Still full: drop the oldest entries (Map keeps insertion order) so memory stays bounded.
-      for (const id of hits.keys()) {
-        if (hits.size <= MAX_TRACKED_KEYS) break;
-        hits.delete(id);
-      }
-    }
-    if (entry.count > max) {
-      res.set('Retry-After', String(Math.max(1, Math.ceil((entry.resetAt - t) / 1000))));
-      return res.status(429).json({ error: 'Too many requests. Try again later.' });
-    }
+    if (entry.count > max) return tooMany(res, entry.resetAt, t);
     next();
   };
 }
@@ -140,13 +148,16 @@ function limitFromEnv(name: string, fallback: number): number {
 const clientIp = (req: Request) => req.ip ?? 'unknown';
 const bodyEmail = (req: Request) => (typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase().slice(0, 254) : '');
 
-/** Per-IP and per-account limits for the credential endpoints. */
+/**
+ * Per-IP first, so one address cannot allocate many per-email counters; then per IP+email, then per
+ * account alone (skipped when the body has no email, so empty requests never share one bucket).
+ */
 export function authRateLimiters(): RequestHandler[] {
   return [
-    createRateLimiter({ windowMs: 10 * 60_000, max: limitFromEnv('RATE_LIMIT_SIGNIN_MAX', 8), key: (req) => `signin:${clientIp(req)}:${bodyEmail(req)}` }),
     createRateLimiter({ windowMs: 10 * 60_000, max: limitFromEnv('RATE_LIMIT_SIGNIN_IP_MAX', 40), key: (req) => `signin-ip:${clientIp(req)}` }),
-    // Per account regardless of IP, so spreading guesses across addresses (or a spoofed proxy header) is still capped.
-    createRateLimiter({ windowMs: 10 * 60_000, max: limitFromEnv('RATE_LIMIT_SIGNIN_ACCOUNT_MAX', 60), key: (req) => `signin-acct:${bodyEmail(req)}` }),
+    createRateLimiter({ windowMs: 10 * 60_000, max: limitFromEnv('RATE_LIMIT_SIGNIN_MAX', 8), key: (req) => `signin:${clientIp(req)}:${bodyEmail(req)}`, skip: (req) => !bodyEmail(req) }),
+    // Per account regardless of IP, so spreading guesses across addresses is still capped.
+    createRateLimiter({ windowMs: 10 * 60_000, max: limitFromEnv('RATE_LIMIT_SIGNIN_ACCOUNT_MAX', 60), key: (req) => `signin-acct:${bodyEmail(req)}`, skip: (req) => !bodyEmail(req) }),
   ];
 }
 

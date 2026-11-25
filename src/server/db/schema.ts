@@ -1,4 +1,4 @@
-import { boolean, int, json, mysqlTable, text, timestamp, unique, varchar } from 'drizzle-orm/mysql-core';
+import { boolean, index, int, json, mysqlTable, text, timestamp, unique, varchar } from 'drizzle-orm/mysql-core';
 
 export const companyRooms = mysqlTable('company_rooms', {
   id: int('id').primaryKey().autoincrement(),
@@ -82,6 +82,19 @@ export const rewardRedemptions = mysqlTable('reward_redemptions', {
   redeemedAt: timestamp('redeemed_at').defaultNow().notNull(),
   fulfilledAt: timestamp('fulfilled_at'),
 });
+
+// Server-side record of how many points and reward currency each account was credited, so the
+// earn budget (src/server/earn-budget.ts) can cap how fast totals rise.
+export const earnLog = mysqlTable('earn_log', {
+  id: int('id').primaryKey().autoincrement(),
+  accountId: varchar('account_id', { length: 36 }).notNull(),
+  roomCode: varchar('room_code', { length: 64 }).notNull(),
+  kind: varchar('kind', { length: 16 }).notNull(),
+  amount: int('amount').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (table) => ({
+  byAccountKindTime: index('earn_log_account_kind_time').on(table.accountId, table.kind, table.createdAt),
+}));
 
 // ── BetterAuth tables ────────────────────────────────────────────────────────
 

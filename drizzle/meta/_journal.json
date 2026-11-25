@@ -15,6 +15,13 @@
       "when": 1795565752523,
       "tag": "0001_room_creator",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1795565988740,
+      "tag": "0002_earn_log",
+      "breakpoints": true
     }
   ]
 }
