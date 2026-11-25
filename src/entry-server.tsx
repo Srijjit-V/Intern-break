@@ -1,5 +1,5 @@
 import { StrictMode, Suspense } from 'react';
-import { renderToString } from 'react-dom/server';
+import { prerender } from 'react-dom/static';
 import { HelmetProvider } from '@dr.pogodin/react-helmet';
 import type { HelmetServerState } from '@dr.pogodin/react-helmet';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -63,13 +63,16 @@ export async function render(url: string): Promise<RenderResult> {
       }
     }
   });
-  const html = renderToString(<StrictMode>
+  // prerender waits for every Suspense boundary (the lazy route chunks), unlike renderToString,
+  // which gave up on them and made the client log React error #419.
+  const { prelude } = await prerender(<StrictMode>
       <HelmetProvider context={helmetContext}>
         <QueryClientProvider client={queryClient}>
           <StaticRouterProvider router={router} context={context} hydrate={false} />
         </QueryClientProvider>
       </HelmetProvider>
     </StrictMode>);
+  const html = await new Response(prelude).text();
   const h = helmetContext.helmet;
   const head = h ? [h.title?.toString() ?? '', h.meta?.toString() ?? '', h.link?.toString() ?? '', h.script?.toString() ?? ''].filter(Boolean).join('\n') : '';
   return {
