@@ -34,6 +34,7 @@ Then in the service's Variables set:
 | --- | --- |
 | `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASS`, `DB_NAME` | reference the MySQL service variables (`MYSQLHOST`, `MYSQLPORT`, `MYSQLUSER`, `MYSQLPASSWORD`, `MYSQLDATABASE`) |
 | `BETTER_AUTH_SECRET` | `openssl rand -base64 32` |
+| `TRUST_PROXY` | `1` on hosts that put one load balancer in front (Railway, Render, Fly). Needed so client IPs and https are read correctly. A number only, never `true`. |
 | `BETTER_AUTH_URL` | the public `https://...` URL Railway gives the service (generate a domain under Settings > Networking) |
 
 Keep the whole app on one origin: better-auth uses `window.location.origin` and cookie sessions, so do not put the API on a different domain. After deploy, sign up, create a room, and run a two-user race from two browsers to verify.

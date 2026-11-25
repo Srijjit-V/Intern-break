@@ -53,38 +53,46 @@ function allowedOrigins(): Set<string> {
   return origins;
 }
 
-/** Writes to /api must come from this app's own origin (defense in depth next to SameSite=Lax cookies). */
+/**
+ * Writes to /api must come from this app's own origin (defense in depth next to SameSite=Lax cookies).
+ * Mounted with app.use('/api', ...) so it uses the router's own matcher (Express matches paths
+ * case-insensitively, so a hand-written startsWith('/api') check could be bypassed with /API).
+ */
 function sameOriginGuard(req: Request, res: Response, next: NextFunction) {
-  if (!UNSAFE_METHODS.has(req.method) || !req.path.startsWith('/api')) return next();
+  if (!UNSAFE_METHODS.has(req.method)) return next();
+  const blocked = () => res.status(403).json({ error: 'Cross-origin request blocked' });
   const origin = req.get('origin');
   if (origin) {
     try {
       const url = new URL(origin);
-      if (url.host === req.get('host') || allowedOrigins().has(url.origin)) return next();
+      // Exact origin match (scheme, host and port), or an explicitly configured origin.
+      if (url.origin === `${req.protocol}://${req.get('host')}` || allowedOrigins().has(url.origin)) return next();
     } catch {
       /* fall through to rejection */
     }
-    return res.status(403).json({ error: 'Cross-origin request blocked' });
+    return blocked();
   }
-  // No Origin: non-browser clients are fine, but a browser that says cross-site is not.
-  if (req.get('sec-fetch-site') === 'cross-site') return res.status(403).json({ error: 'Cross-origin request blocked' });
+  // No Origin: a script or curl is fine, but a browser says where the request came from.
+  const site = req.get('sec-fetch-site');
+  if (site === 'cross-site' || site === 'same-site') return blocked();
   next();
 }
 
-/** TRUST_PROXY: unset or "false" = trust nothing; a number = that many proxy hops; "true" = trust all (only behind a proxy you control). */
-function trustProxySetting(): boolean | number {
-  const raw = process.env.TRUST_PROXY?.trim().toLowerCase();
-  if (!raw || raw === 'false') return false;
-  if (raw === 'true') return true;
-  const hops = Number(raw);
-  return Number.isInteger(hops) && hops >= 0 ? hops : false;
+/**
+ * TRUST_PROXY is the number of reverse-proxy hops in front of the app (1 for a single load balancer).
+ * Unset or 0 trusts nothing. "true" is deliberately not accepted: trusting every X-Forwarded-For hop
+ * lets a client pick its own IP and walk around the rate limits.
+ */
+function trustProxySetting(): number | false {
+  const hops = Number(process.env.TRUST_PROXY?.trim());
+  return Number.isInteger(hops) && hops > 0 ? hops : false;
 }
 
 export function applySecurity(app: Express): void {
   app.disable('x-powered-by');
   app.set('trust proxy', trustProxySetting());
   app.use(securityHeaders);
-  app.use(sameOriginGuard);
+  app.use('/api', sameOriginGuard);
 }
 
 interface LimiterOptions {
@@ -94,18 +102,27 @@ interface LimiterOptions {
   now?: () => number;
 }
 
+const MAX_TRACKED_KEYS = 10_000;
+
 export function createRateLimiter({ windowMs, max, key, now = Date.now }: LimiterOptions): RequestHandler {
   const hits = new Map<string, { count: number; resetAt: number }>();
   return (req, res, next) => {
     const t = now();
-    const k = key(req);
+    const k = key(req).slice(0, 300);
     let entry = hits.get(k);
     if (!entry || entry.resetAt <= t) {
       entry = { count: 0, resetAt: t + windowMs };
       hits.set(k, entry);
     }
     entry.count += 1;
-    if (hits.size > 10_000) for (const [id, e] of hits) if (e.resetAt <= t) hits.delete(id);
+    if (hits.size > MAX_TRACKED_KEYS) {
+      for (const [id, e] of hits) if (e.resetAt <= t) hits.delete(id);
+      // Still full: drop the oldest entries (Map keeps insertion order) so memory stays bounded.
+      for (const id of hits.keys()) {
+        if (hits.size <= MAX_TRACKED_KEYS) break;
+        hits.delete(id);
+      }
+    }
     if (entry.count > max) {
       res.set('Retry-After', String(Math.max(1, Math.ceil((entry.resetAt - t) / 1000))));
       return res.status(429).json({ error: 'Too many requests. Try again later.' });
@@ -128,6 +145,8 @@ export function authRateLimiters(): RequestHandler[] {
   return [
     createRateLimiter({ windowMs: 10 * 60_000, max: limitFromEnv('RATE_LIMIT_SIGNIN_MAX', 8), key: (req) => `signin:${clientIp(req)}:${bodyEmail(req)}` }),
     createRateLimiter({ windowMs: 10 * 60_000, max: limitFromEnv('RATE_LIMIT_SIGNIN_IP_MAX', 40), key: (req) => `signin-ip:${clientIp(req)}` }),
+    // Per account regardless of IP, so spreading guesses across addresses (or a spoofed proxy header) is still capped.
+    createRateLimiter({ windowMs: 10 * 60_000, max: limitFromEnv('RATE_LIMIT_SIGNIN_ACCOUNT_MAX', 60), key: (req) => `signin-acct:${bodyEmail(req)}` }),
   ];
 }
 
