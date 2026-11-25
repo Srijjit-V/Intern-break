@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { and, desc, eq, gte, isNull, or, sql } from 'drizzle-orm';
+import { and, desc, eq, gte, sql } from 'drizzle-orm';
 import { db } from '../../db/client.js';
 import { companyMembers, companyRooms, earnLog, rewardRedemptions } from '../../db/schema.js';
 import { capsFor, clampEarn } from '../../earn-budget';
@@ -152,11 +152,7 @@ export default async function handler(req: Request, res: Response) {
       if (Number(points) !== cost) return res.status(400).json({ error: 'Price mismatch' });
       // Rewards are physical and an admin fulfils them: cap how many a member can have open or request per day.
       const redeemed = await db.select({ status: rewardRedemptions.status, redeemedAt: rewardRedemptions.redeemedAt }).from(rewardRedemptions)
-        .where(and(eq(rewardRedemptions.roomCode, roomCode), or(
-          eq(rewardRedemptions.accountId, session.user.id),
-          // Rows from before account_id existed count too (also backfilled by migration 0004).
-          and(isNull(rewardRedemptions.accountId), eq(rewardRedemptions.memberName, member[0].name)),
-        )));
+        .where(and(eq(rewardRedemptions.roomCode, roomCode), eq(rewardRedemptions.accountId, session.user.id)));
       const pending = redeemed.filter((r) => r.status === 'pending_fulfillment').length;
       const lastDay = redeemed.filter((r) => new Date(r.redeemedAt).getTime() > Date.now() - 86_400_000).length;
       if (pending >= 3 || lastDay >= 5) return res.status(429).json({ error: 'Redemption limit reached. Wait for your open rewards to be fulfilled.' });

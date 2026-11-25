@@ -2,7 +2,7 @@ import type { Request, Response } from 'express';
 import { and, eq, sql } from 'drizzle-orm';
 import { getAuth } from '@/lib/auth/auth';
 import { db } from '../../db/client.js';
-import { isLobbyOverdue } from '../../race-lobby';
+import { advanceRace } from '../../race-rules';
 import { MAX_PLAUSIBLE_WPM } from '../../../lib/typing-math';
 import { companyMembers, typingRaceParticipants, typingRaces } from '../../db/schema.js';
 
@@ -39,21 +39,20 @@ export default async function handler(req: Request, res: Response) {
         .limit(1);
       const existingRace = openRaces[0];
 
-      // A lobby is stale only after 10 minutes with no activity from the race or any participant.
-      let lobbyIsStale = false;
-      if (existingRace?.status === 'lobby') {
-        const lobbyRows = await db.select().from(typingRaceParticipants).where(eq(typingRaceParticipants.raceId, existingRace.id));
-        const lastActivity = Math.max(new Date(existingRace.updatedAt).getTime(), ...lobbyRows.map((p) => new Date(p.updatedAt).getTime()));
-        const overdue = isLobbyOverdue(existingRace.createdAt, lastActivity, Date.now());
-        if (overdue) {
+      // Stale races (abandoned lobby, expired countdown, idle active race) are closed by the same pure
+      // rules the read path uses, so a silent player cannot block the room for ever.
+      let staleClosed = false;
+      if (existingRace) {
+        const existingParticipants = await db.select().from(typingRaceParticipants).where(eq(typingRaceParticipants.raceId, existingRace.id));
+        if (advanceRace(existingRace, existingParticipants, Date.now()) === 'finished') {
           // The guarded update's row count decides: if someone else changed the race first, treat it as live.
           const [closed] = await db.update(typingRaces).set({ status: 'finished', updatedAt: new Date() })
-            .where(and(eq(typingRaces.id, existingRace.id), eq(typingRaces.status, 'lobby')));
-          lobbyIsStale = Number(closed.affectedRows) === 1;
+            .where(and(eq(typingRaces.id, existingRace.id), eq(typingRaces.status, existingRace.status)));
+          staleClosed = Number(closed.affectedRows) === 1;
         }
       }
 
-      if (existingRace?.status === 'lobby' && !lobbyIsStale) {
+      if (existingRace?.status === 'lobby' && !staleClosed) {
         const lobbyParticipants = await db.select().from(typingRaceParticipants).where(eq(typingRaceParticipants.raceId, existingRace.id));
         const alreadyIn = lobbyParticipants.some((participant) => participant.accountId === session.user.id);
         if (!alreadyIn && lobbyParticipants.length >= MAX_RACERS) {
@@ -66,14 +65,7 @@ export default async function handler(req: Request, res: Response) {
         return res.json({ race: existingRace, participants });
       }
 
-      if (existingRace && !lobbyIsStale) {
-        const participants = await db.select().from(typingRaceParticipants).where(eq(typingRaceParticipants.raceId, existingRace.id));
-        const isOnlyParticipant = participants.length === 1 && participants[0].accountId === session.user.id;
-        const isStale = (existingRace.status === 'countdown' && (!existingRace.startsAt || new Date(existingRace.startsAt).getTime() + 15000 < Date.now()))
-          || (existingRace.status === 'active' && isOnlyParticipant && new Date(existingRace.updatedAt).getTime() + 120000 < Date.now());
-        if (!isStale) return res.status(409).json({ error: 'A room race is already underway' });
-        await db.update(typingRaces).set({ status: 'finished', updatedAt: new Date() }).where(eq(typingRaces.id, existingRace.id));
-      }
+      if (existingRace && !staleClosed) return res.status(409).json({ error: 'A room race is already underway' });
 
       const id = `race_${roomCode}_${Date.now()}`;
       await db.insert(typingRaces).values({ id, roomCode, passage, status: 'lobby', startsAt: null, createdByAccountId: session.user.id });

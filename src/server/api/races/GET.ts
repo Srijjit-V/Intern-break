@@ -2,7 +2,7 @@ import type { Request, Response } from 'express';
 import { and, desc, eq, sql } from 'drizzle-orm';
 import { getAuth } from '@/lib/auth/auth';
 import { db } from '../../db/client.js';
-import { isLobbyOverdue } from '../../race-lobby';
+import { advanceRace } from '../../race-rules';
 import { companyMembers, typingRaceParticipants, typingRaces } from '../../db/schema.js';
 
 async function getSessionUser(req: Request) {
@@ -28,30 +28,16 @@ export default async function handler(req: Request, res: Response) {
     if (!race) return res.json({ race: null, participants: [] });
 
     const participants = await db.select().from(typingRaceParticipants).where(eq(typingRaceParticipants.raceId, race.id));
-    const now = Date.now();
-    const isExpiredCountdown = race.status === 'countdown' && (!race.startsAt || new Date(race.startsAt).getTime() + 15000 < now);
-    // A lobby nobody readied up in 10 minutes is abandoned, so it cannot block the room.
-    // Activity is the newest of the race row and any participant row (joins and ready-ups bump those).
-    const lastActivity = Math.max(new Date(race.updatedAt).getTime(), ...participants.map((p) => new Date(p.updatedAt).getTime()));
-    const isAbandonedLobby = race.status === 'lobby' && isLobbyOverdue(race.createdAt, lastActivity, now);
-    const isAbandonedActiveRace = race.status === 'active'
-      && participants.length <= 1
-      && new Date(race.updatedAt).getTime() + 120000 < now;
-
-    if (isExpiredCountdown || isAbandonedActiveRace || isAbandonedLobby) {
+    // One pure function decides every time- and data-driven transition (src/server/race-rules.ts).
+    const next = advanceRace(race, participants, Date.now());
+    if (next === 'finished') {
       // Only close the status we observed, so a concurrent ready-up is not clobbered.
       await db.update(typingRaces).set({ status: 'finished', updatedAt: new Date() }).where(and(eq(typingRaces.id, race.id), eq(typingRaces.status, race.status)));
       return res.json({ race: null, participants: [] });
     }
-
-    if (race.status === 'countdown' && race.startsAt && new Date(race.startsAt).getTime() <= now) {
+    if (next === 'active' && race.status === 'countdown') {
       await db.update(typingRaces).set({ status: 'active', updatedAt: new Date() }).where(and(eq(typingRaces.id, race.id), eq(typingRaces.status, 'countdown')));
       race = { ...race, status: 'active' };
-    }
-
-    if (race.status === 'active' && participants.length > 0 && participants.every((participant) => Boolean(participant.finishedAt))) {
-      await db.update(typingRaces).set({ status: 'finished', updatedAt: new Date() }).where(and(eq(typingRaces.id, race.id), eq(typingRaces.status, 'active')));
-      return res.json({ race: null, participants: [] });
     }
     res.json({ race, participants });
   } catch (error) {
